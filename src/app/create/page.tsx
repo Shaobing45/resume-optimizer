@@ -4,114 +4,432 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
+interface ResumeData {
+  name: string;
+  phone: string;
+  email: string;
+  location: string;
+  photo: string;
+  summary: string;
+  targetPosition: string;
+  education: { school: string; degree: string; major: string; start: string; end: string }[];
+  skills: string[];
+  experience: { company: string; role: string; start: string; end: string; desc: string }[];
+}
+
+const TEMPLATES = [
+  { id: 'classic', name: '经典单栏', desc: '简约大方，适合所有岗位' },
+  { id: 'modern', name: '现代简洁', desc: '清爽留白，适合互联网/设计' },
+  { id: 'timeline', name: '时间轴', desc: '突出时间线，适合经历丰富的' },
+];
+
+const INITIAL: ResumeData = {
+  name: '', phone: '', email: '', location: '', photo: '',
+  summary: '', targetPosition: '',
+  education: [{ school: '', degree: '', major: '', start: '', end: '' }],
+  skills: [],
+  experience: [{ company: '', role: '', start: '', end: '', desc: '' }],
+};
+
 export default function CreatePage() {
   const router = useRouter();
-  const [info, setInfo] = useState('');
-  const [targetPosition, setTargetPosition] = useState('');
+  const [data, setData] = useState<ResumeData>({ ...INITIAL });
+  const [template, setTemplate] = useState('classic');
+  const [skillInput, setSkillInput] = useState('');
+  const [rawMode, setRawMode] = useState(false);
+  const [rawText, setRawText] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const handleGenerate = async () => {
-    if (info.trim().length < 10) {
-      setError('请至少输入10个字以上的个人信息');
-      return;
+  const update = (field: keyof ResumeData, value: unknown) => setData({ ...data, [field]: value });
+
+  const addSkill = () => {
+    const s = skillInput.trim();
+    if (s && !data.skills.includes(s)) {
+      setData({ ...data, skills: [...data.skills, s] });
+      setSkillInput('');
     }
+  };
+  const removeSkill = (s: string) => setData({ ...data, skills: data.skills.filter((x) => x !== s) });
+
+  const addEducation = () => setData({ ...data, education: [...data.education, { school: '', degree: '', major: '', start: '', end: '' }] });
+  const updateEducation = (i: number, f: string, v: string) => {
+    const edu = [...data.education];
+    edu[i] = { ...edu[i], [f]: v };
+    setData({ ...data, education: edu });
+  };
+  const removeEducation = (i: number) => {
+    if (data.education.length > 1) setData({ ...data, education: data.education.filter((_, idx) => idx !== i) });
+  };
+
+  const addExperience = () => setData({ ...data, experience: [...data.experience, { company: '', role: '', start: '', end: '', desc: '' }] });
+  const updateExperience = (i: number, f: string, v: string) => {
+    const exp = [...data.experience];
+    exp[i] = { ...exp[i], [f]: v };
+    setData({ ...data, experience: exp });
+  };
+  const removeExperience = (i: number) => {
+    if (data.experience.length > 1) setData({ ...data, experience: data.experience.filter((_, idx) => idx !== i) });
+  };
+
+  const handleGenerate = async () => {
+    const text = rawMode
+      ? rawText
+      : [
+          `姓名：${data.name}`,
+          `电话：${data.phone}`,
+          `邮箱：${data.email}`,
+          `所在地：${data.location}`,
+          `个人简介：${data.summary}`,
+          `目标职位：${data.targetPosition}`,
+          data.education.map((e) => `教育经历：${e.school} ${e.degree} ${e.major} ${e.start}-${e.end}`).join('\n'),
+          `技能：${data.skills.join(', ')}`,
+          data.experience.map((e) => `工作经历：${e.company} ${e.role} ${e.start}-${e.end}\n${e.desc}`).join('\n'),
+        ].filter(Boolean).join('\n\n');
+
+    if (!text || text.replace(/\s/g, '').length < 10) return setError('请至少填写一些信息');
 
     setLoading(true);
     setError('');
-
     try {
       const res = await fetch('/api/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ info, targetPosition: targetPosition || undefined }),
+        body: JSON.stringify({ info: text, targetPosition: data.targetPosition || undefined }),
       });
-
       const json = await res.json();
-
-      if (!json.success || !json.data?.id) {
-        setError(json.error || '生成失败');
-        return;
-      }
-
-      // 跳转到结果页（和优化简历流程一致：预览→付费→下载）
+      if (!json.success || !json.data?.id) return setError(json.error || '生成失败');
       router.push(`/result/${json.data.id}?tier=single&from=create`);
     } catch {
-      setError('网络错误，请重试');
+      setError('网络错误');
     } finally {
       setLoading(false);
     }
   };
 
+  const previewData = data;
+
   return (
-    <div className="mx-auto max-w-2xl px-4 py-8">
-      <div className="text-center">
-        <h1 className="text-2xl font-bold text-slate-900 sm:text-3xl">没有简历？直接生成</h1>
-        <p className="mt-2 text-sm text-slate-500">
-          把你的经历随便写下来，AI 帮你整理成专业简历
-        </p>
+    <div className="mx-auto max-w-7xl px-4 py-6 sm:py-8">
+      <div className="text-center mb-6">
+        <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">创建简历</h1>
+        <p className="mt-1 text-sm text-gray-500">填写信息 → 选择模板 → 实时预览 → 导出</p>
       </div>
 
-      <div className="mt-8 space-y-4">
-        <div>
-          <label className="block text-sm font-medium text-slate-700">
-            目标职位（选填）
-          </label>
-          <input
-            type="text"
-            value={targetPosition}
-            onChange={(e) => setTargetPosition(e.target.value)}
-            placeholder="例如：农业技术员、前端开发、产品经理"
-            className="mt-1 w-full rounded-xl border border-slate-300 px-4 py-3 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-slate-700">
-            你的信息
-            <span className="ml-1 text-xs text-slate-400">（想到什么写什么，越详细越好）</span>
-          </label>
-          <textarea
-            rows={14}
-            value={info}
-            onChange={(e) => setInfo(e.target.value)}
-            placeholder={`随便写，格式不限，比如：
-
-我叫张三，电话138xxxx，南京大学计算机专业2024年毕业。
-在某某公司实习过半年，主要做Java后端开发，
-参与了一个电商项目，负责订单模块。
-会Java、Spring、MySQL、Redis。
-英语六级，拿过校二等奖学金。`}
-            className="mt-1 w-full rounded-xl border border-slate-300 px-4 py-3 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 resize-y"
-          />
-        </div>
-
+      {/* 模板选择 */}
+      <div className="mb-6 flex flex-wrap justify-center gap-2">
+        {TEMPLATES.map((t) => (
+          <button
+            key={t.id}
+            onClick={() => setTemplate(t.id)}
+            className={`rounded-xl border-2 px-4 py-2.5 text-sm font-medium transition-all ${
+              template === t.id
+                ? 'border-blue-500 bg-blue-50 text-blue-700 shadow-sm'
+                : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300'
+            }`}
+          >
+            <span className="block font-semibold">{t.name}</span>
+            <span className="block text-[10px] text-gray-400">{t.desc}</span>
+          </button>
+        ))}
         <button
-          onClick={handleGenerate}
-          disabled={loading}
-          className="w-full rounded-xl bg-blue-600 px-6 py-3.5 text-sm font-semibold text-white shadow-md transition-all hover:bg-blue-700 disabled:opacity-50"
+          onClick={() => { setRawMode(!rawMode); setError(''); }}
+          className={`rounded-xl border-2 px-4 py-2.5 text-sm font-medium transition-all ${
+            rawMode ? 'border-purple-500 bg-purple-50 text-purple-700' : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300'
+          }`}
         >
-          {loading ? (
-            <span className="flex items-center justify-center gap-2">
-              <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
-              AI 正在生成简历…
-            </span>
-          ) : (
-            '✨ 生成简历'
-          )}
+          {rawMode ? '📝 结构化模式' : '✏️ 自由输入模式'}
         </button>
+      </div>
 
-        {error && (
-          <p className="rounded-lg bg-red-50 px-4 py-2 text-sm text-red-600">{error}</p>
+      <div className="grid gap-6 lg:grid-cols-2">
+        {/* ====== 左侧：编辑区 ====== */}
+        <div className="space-y-4">
+          {rawMode ? (
+            /* 自由输入模式 */
+            <div className="rounded-xl border border-gray-200 bg-white p-5">
+              <label className="block text-sm font-semibold text-gray-700 mb-2">随便写你的经历</label>
+              <textarea
+                rows={20}
+                value={rawText}
+                onChange={(e) => setRawText(e.target.value)}
+                placeholder="我叫张三，电话138xxxx，南京大学计算机专业...&#10;会Java、Spring、MySQL...&#10;在某某公司实习过..."
+                className="w-full rounded-lg border border-gray-200 px-4 py-3 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 resize-y"
+              />
+              <button
+                onClick={() => setData({ ...data, ...INITIAL })}
+                className="mt-3 w-full rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-md transition-all hover:shadow-lg disabled:opacity-50"
+                disabled={loading}
+              >
+                {loading ? '🤖 AI 生成中…' : '✨ AI 生成简历'}
+              </button>
+            </div>
+          ) : (
+            /* 结构化模式 */
+            <>
+              {/* 基本信息 */}
+              <Section title="📋 基本信息">
+                <div className="grid grid-cols-2 gap-3">
+                  <Input label="姓名" value={data.name} onChange={(v) => update('name', v)} />
+                  <Input label="目标职位" value={data.targetPosition} onChange={(v) => update('targetPosition', v)} />
+                  <Input label="电话" value={data.phone} onChange={(v) => update('phone', v)} />
+                  <Input label="邮箱" value={data.email} onChange={(v) => update('email', v)} />
+                  <Input label="所在地" value={data.location} onChange={(v) => update('location', v)} />
+                </div>
+              </Section>
+
+              {/* 个人简介 */}
+              <Section title="✍️ 个人简介">
+                <textarea
+                  value={data.summary}
+                  onChange={(e) => update('summary', e.target.value)}
+                  rows={3}
+                  placeholder="专业背景、技能特长、职业目标…"
+                  className="w-full rounded-lg border border-gray-200 px-4 py-3 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 resize-y"
+                />
+              </Section>
+
+              {/* 教育背景 */}
+              <Section title="🎓 教育背景">
+                {data.education.map((edu, i) => (
+                  <div key={i} className="relative rounded-lg border border-gray-100 bg-gray-50 p-3 mb-2">
+                    <button onClick={() => removeEducation(i)} className="absolute right-2 top-2 text-xs text-red-400 hover:text-red-600">✕</button>
+                    <div className="grid grid-cols-2 gap-2">
+                      <Input label="学校" value={edu.school} onChange={(v) => updateEducation(i, 'school', v)} />
+                      <Input label="学位" value={edu.degree} onChange={(v) => updateEducation(i, 'degree', v)} />
+                      <Input label="专业" value={edu.major} onChange={(v) => updateEducation(i, 'major', v)} />
+                      <div className="grid grid-cols-2 gap-1">
+                        <Input label="开始" value={edu.start} onChange={(v) => updateEducation(i, 'start', v)} />
+                        <Input label="结束" value={edu.end} onChange={(v) => updateEducation(i, 'end', v)} />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                <button onClick={addEducation} className="text-xs text-blue-600 hover:text-blue-800">+ 添加教育经历</button>
+              </Section>
+
+              {/* 专业技能 */}
+              <Section title="🛠 专业技能">
+                <div className="flex flex-wrap gap-1.5 mb-2">
+                  {data.skills.map((s) => (
+                    <span key={s} className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700">
+                      {s}
+                      <button onClick={() => removeSkill(s)} className="text-blue-400 hover:text-blue-600">×</button>
+                    </span>
+                  ))}
+                </div>
+                <div className="flex gap-2">
+                  <input
+                    value={skillInput}
+                    onChange={(e) => setSkillInput(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addSkill())}
+                    placeholder="输入技能后按回车添加"
+                    className="flex-1 rounded-lg border border-gray-200 px-3 py-2 text-xs focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                  />
+                  <button onClick={addSkill} className="rounded-lg bg-blue-600 px-3 py-2 text-xs text-white hover:bg-blue-700">添加</button>
+                </div>
+              </Section>
+
+              {/* 工作/项目经历 */}
+              <Section title="💼 工作/项目经历">
+                {data.experience.map((exp, i) => (
+                  <div key={i} className="relative rounded-lg border border-gray-100 bg-gray-50 p-3 mb-2">
+                    <button onClick={() => removeExperience(i)} className="absolute right-2 top-2 text-xs text-red-400 hover:text-red-600">✕</button>
+                    <div className="grid grid-cols-2 gap-2 mb-2">
+                      <Input label="公司/项目" value={exp.company} onChange={(v) => updateExperience(i, 'company', v)} />
+                      <Input label="职位" value={exp.role} onChange={(v) => updateExperience(i, 'role', v)} />
+                      <Input label="开始" value={exp.start} onChange={(v) => updateExperience(i, 'start', v)} />
+                      <Input label="结束" value={exp.end} onChange={(v) => updateExperience(i, 'end', v)} />
+                    </div>
+                    <textarea
+                      value={exp.desc}
+                      onChange={(e) => updateExperience(i, 'desc', e.target.value)}
+                      rows={3}
+                      placeholder="工作职责、成果、亮点…"
+                      className="w-full rounded-lg border border-gray-200 px-3 py-2 text-xs focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 resize-y"
+                    />
+                  </div>
+                ))}
+                <button onClick={addExperience} className="text-xs text-blue-600 hover:text-blue-800">+ 添加工作经历</button>
+              </Section>
+
+              {/* AI 生成按钮 */}
+              <button
+                onClick={handleGenerate}
+                disabled={loading}
+                className="w-full rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-3.5 text-sm font-semibold text-white shadow-md transition-all hover:shadow-lg disabled:opacity-50"
+              >
+                {loading ? '🤖 AI 正在生成…' : '✨ AI 优化并生成简历'}
+              </button>
+            </>
+          )}
+
+          {error && <p className="rounded-lg bg-red-50 px-4 py-2 text-sm text-red-600">{error}</p>}
+
+          <p className="text-center text-xs text-gray-400">
+            已有简历？
+            <Link href="/upload" className="text-blue-600 hover:underline ml-1">去上传优化</Link>
+          </p>
+        </div>
+
+        {/* ====== 右侧：实时预览 ====== */}
+        <div className="lg:sticky lg:top-20 lg:self-start">
+          <div className="mb-3 flex items-center justify-between">
+            <span className="text-sm font-semibold text-gray-700">📄 实时预览</span>
+            <span className="text-[10px] text-gray-400">{TEMPLATES.find((t) => t.id === template)?.name}</span>
+          </div>
+          <div className="rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden">
+            <div className="aspect-[210/297] max-h-[800px] overflow-y-auto p-4 sm:p-6">
+              <ResumePreview data={previewData} template={template} />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ====== 子组件 ====== */
+
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div className="rounded-xl border border-gray-200 bg-white p-4">
+      <h3 className="mb-3 text-sm font-semibold text-gray-800">{title}</h3>
+      {children}
+    </div>
+  );
+}
+
+function Input({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
+  return (
+    <div>
+      <label className="block text-[10px] font-medium text-gray-500 mb-0.5">{label}</label>
+      <input
+        type="text"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+      />
+    </div>
+  );
+}
+
+/* ====== 简历预览组件 ====== */
+
+function ResumePreview({ data, template }: { data: ResumeData; template: string }) {
+  if (!data.name && !data.summary && data.skills.length === 0 && !data.experience[0]?.company) {
+    return (
+      <div className="flex h-48 items-center justify-center text-center text-gray-300 text-xs">
+        填写左侧信息<br />实时预览简历效果
+      </div>
+    );
+  }
+
+  const baseStyle = 'font-sans text-xs leading-relaxed text-gray-800';
+
+  if (template === 'modern') {
+    return (
+      <div className={`${baseStyle} p-2`}>
+        {data.photo && <img src={data.photo} alt="" className="w-16 h-16 rounded-full object-cover mx-auto mb-2" />}
+        <h1 className="text-lg font-bold text-center text-gray-900">{data.name || '（姓名）'}</h1>
+        <p className="text-center text-[10px] text-blue-600">{data.targetPosition}</p>
+        <p className="text-center text-[9px] text-gray-400">{[data.phone, data.email, data.location].filter(Boolean).join(' | ')}</p>
+        {data.summary && <p className="mt-2 text-[10px] text-gray-600 leading-relaxed">{data.summary}</p>}
+        <div className="mt-3 border-t border-gray-100 pt-2">
+          <p className="font-semibold text-gray-700 mb-1 text-[10px]">教育经历</p>
+          {data.education.map((e, i) => e.school && <p key={i} className="text-[10px] text-gray-600">{e.school} · {e.major} · {e.start}-{e.end}</p>)}
+        </div>
+        {data.skills.length > 0 && (
+          <div className="mt-2 border-t border-gray-100 pt-2">
+            <p className="font-semibold text-gray-700 mb-1 text-[10px]">专业技能</p>
+            <div className="flex flex-wrap gap-1">{data.skills.map((s, i) => <span key={i} className="rounded bg-gray-100 px-2 py-0.5 text-[9px] text-gray-600">{s}</span>)}</div>
+          </div>
+        )}
+        {data.experience[0]?.company && (
+          <div className="mt-2 border-t border-gray-100 pt-2">
+            <p className="font-semibold text-gray-700 mb-1 text-[10px]">工作经历</p>
+            {data.experience.map((e, i) => e.company && (
+              <div key={i} className="mb-2">
+                <p className="text-[10px] font-semibold text-gray-800">{e.company} <span className="font-normal text-gray-400">· {e.role}</span></p>
+                <p className="text-[9px] text-gray-400">{e.start}-{e.end}</p>
+                <p className="text-[10px] text-gray-600 mt-0.5">{e.desc}</p>
+              </div>
+            ))}
+          </div>
         )}
       </div>
+    );
+  }
 
-      <div className="mt-8 text-center">
-        <p className="text-xs text-slate-400">
-          已有简历？去
-          <Link href="/upload" className="text-blue-600 hover:underline">上传优化</Link>
-        </p>
+  if (template === 'timeline') {
+    return (
+      <div className={`${baseStyle} p-2`}>
+        <h1 className="text-lg font-bold text-gray-900">{data.name || '（姓名）'}</h1>
+        <p className="text-xs text-blue-600">{data.targetPosition}</p>
+        <p className="text-[10px] text-gray-400">{[data.phone, data.email, data.location].filter(Boolean).join(' | ')}</p>
+        {data.summary && <p className="mt-2 text-[10px] text-gray-600 italic">"{data.summary}"</p>}
+        <div className="mt-3 space-y-3">
+          {data.education.map((e, i) => e.school && (
+            <div key={i} className="relative pl-3 border-l-2 border-blue-300">
+              <div className="absolute -left-[4.5px] top-0.5 h-2 w-2 rounded-full bg-blue-400" />
+              <p className="text-[10px] font-semibold text-gray-800">{e.school}</p>
+              <p className="text-[9px] text-gray-500">{e.major} · {e.degree} · {e.start}-{e.end}</p>
+            </div>
+          ))}
+        </div>
+        {data.skills.length > 0 && (
+          <div className="mt-3 border-t border-gray-100 pt-2">
+            <p className="font-semibold text-gray-700 mb-1 text-[10px]">技能</p>
+            <div className="flex flex-wrap gap-1">{data.skills.map((s, i) => <span key={i} className="rounded-full bg-blue-50 px-2.5 py-0.5 text-[9px] text-blue-600">{s}</span>)}</div>
+          </div>
+        )}
+        {data.experience[0]?.company && (
+          <div className="mt-3 border-t border-gray-100 pt-2 space-y-3">
+            <p className="font-semibold text-gray-700 text-[10px]">工作经历</p>
+            {data.experience.map((e, i) => e.company && (
+              <div key={i} className="relative pl-3 border-l-2 border-blue-300">
+                <div className="absolute -left-[4.5px] top-0.5 h-2 w-2 rounded-full bg-blue-400" />
+                <p className="text-[10px] font-semibold text-gray-800">{e.role} @ {e.company}</p>
+                <p className="text-[9px] text-gray-400">{e.start} - {e.end}</p>
+                <p className="text-[10px] text-gray-600 mt-0.5">{e.desc}</p>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
+    );
+  }
+
+  // Classic template (default)
+  return (
+    <div className={`${baseStyle} p-2`}>
+      <div className="border-b-2 border-gray-800 pb-2 mb-2">
+        <h1 className="text-xl font-bold text-gray-900">{data.name || '（姓名）'}</h1>
+        <p className="text-xs text-blue-600">{data.targetPosition}</p>
+        <p className="text-[10px] text-gray-400">{[data.phone, data.email, data.location].filter(Boolean).join(' | ')}</p>
+      </div>
+      {data.summary && <p className="mb-2 text-[10px] text-gray-600 leading-relaxed">{data.summary}</p>}
+      <div className="mb-2">
+        <h2 className="text-[10px] font-bold text-gray-800 uppercase tracking-wider border-b border-gray-100 pb-0.5 mb-1">教育经历</h2>
+        {data.education.map((e, i) => e.school && <p key={i} className="text-[10px] text-gray-600">{e.school} — {e.major}（{e.start}-{e.end}）</p>)}
+      </div>
+      {data.skills.length > 0 && (
+        <div className="mb-2">
+          <h2 className="text-[10px] font-bold text-gray-800 uppercase tracking-wider border-b border-gray-100 pb-0.5 mb-1">专业技能</h2>
+          <p className="text-[10px] text-gray-600">{data.skills.join('、')}</p>
+        </div>
+      )}
+      {data.experience[0]?.company && (
+        <div>
+          <h2 className="text-[10px] font-bold text-gray-800 uppercase tracking-wider border-b border-gray-100 pb-0.5 mb-1">工作经历</h2>
+          {data.experience.map((e, i) => e.company && (
+            <div key={i} className="mb-1.5">
+              <p className="text-[10px] font-semibold text-gray-800">{e.role}，{e.company} <span className="font-normal text-gray-400">({e.start}-{e.end})</span></p>
+              <p className="text-[10px] text-gray-600">{e.desc}</p>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
