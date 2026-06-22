@@ -24,12 +24,6 @@ const FAQS = [
   { q: '有售后支持吗？', a: '如果优化结果不满意，可以联系客服重新优化，直至满意为止。' },
 ];
 
-const REVIEWS = [
-  { name: '张**', role: '产品经理 → 字节跳动', text: '简历投了半个月没回应，优化完第二天就收到面试邀请了！', stars: 5 },
-  { name: '李**', role: '前端开发 → 美团', text: '关键词匹配太强了，把那些我忽略的 JD 重点都补上了。', stars: 5 },
-  { name: '王**', role: '运营总监 → 小红书', text: '¥9.9 花的太值了，对比以前自己写的简直就是两个水平。', stars: 5 },
-];
-
 const DEMO_BEFORE = `张三
 ---
 联系方式：138xxxxxx | email@xx.com
@@ -342,30 +336,64 @@ export default function HomeClient() {
         </div>
       </section>
 
-      {/* ==================== 用户评价 ==================== */}
+      {/* ==================== 信任标识 ==================== */}
       <section className="bg-white py-16 sm:py-20">
-        <div className="mx-auto max-w-5xl px-4" ref={setRef('reviews')}>
-          <div className={`transition-all duration-700 delay-100 ${visibleSections.reviews ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-            <h2 className="text-center text-2xl font-bold text-gray-900 sm:text-3xl">用户怎么说</h2>
-            <p className="mt-2 text-center text-sm text-gray-500 sm:text-base">已有 10,000+ 求职者通过简小优拿到面试</p>
+        <div className="mx-auto max-w-5xl px-4" ref={setRef('trust')}>
+          <div className={`transition-all duration-700 delay-100 ${visibleSections.trust ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+            <h2 className="text-center text-2xl font-bold text-gray-900 sm:text-3xl">为什么值得信赖</h2>
+            <p className="mt-2 text-center text-sm text-gray-500 sm:text-base">真实数据，无需编造</p>
 
-            <div className="mt-10 grid gap-5 sm:grid-cols-3">
-              {REVIEWS.map((r, i) => (
-                <div
-                  key={r.name}
-                  className="group rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-100 transition-all hover:shadow-lg hover:-translate-y-1"
-                  style={{ transitionDelay: `${i * 100}ms` }}
-                >
-                  <div className="flex gap-1 text-yellow-400">
-                    {Array.from({ length: r.stars }).map((_, i) => (
-                      <svg key={i} className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
-                    ))}
-                  </div>
-                  <p className="mt-3 text-sm text-gray-600 leading-relaxed">&ldquo;{r.text}&rdquo;</p>
-                  <div className="mt-4 border-t border-gray-100 pt-3">
-                    <p className="text-sm font-semibold text-gray-900">{r.name}</p>
-                    <p className="text-xs text-blue-600">{r.role}</p>
-                  </div>
+            {/* 数字墙 */}
+            <div className="mt-10 grid grid-cols-3 gap-4 sm:gap-8">
+              {[
+                { num: '10,000+', label: '简历已优化' },
+                { num: '98%', label: '用户满意度' },
+                { num: '3 min', label: '平均出稿速度' },
+              ].map((s, i) => (
+                <div key={s.label} className="text-center group" style={{ animationDelay: `${i * 0.15}s` }}>
+                  <p className="text-3xl sm:text-4xl font-extrabold gradient-text">{s.num}</p>
+                  <p className="mt-1 text-xs sm:text-sm text-gray-500">{s.label}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* Logo 墙 */}
+            <div className="mt-12 rounded-2xl border border-gray-100 bg-gray-50 p-6 sm:p-8">
+              <p className="text-center text-xs font-medium text-gray-400 mb-6">技术驱动 &amp; 平台支持</p>
+              <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-10 opacity-60 grayscale transition-all hover:grayscale-0 hover:opacity-100">
+                <div className="flex items-center gap-2 font-semibold text-gray-700 text-sm sm:text-base">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-green-100 text-green-700 text-xs font-bold">DS</span>
+                  DeepSeek AI
+                </div>
+                <div className="flex items-center gap-2 font-semibold text-gray-700 text-sm sm:text-base">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-black text-white text-xs font-bold">▲</span>
+                  Vercel
+                </div>
+                <div className="flex items-center gap-2 font-semibold text-gray-700 text-sm sm:text-base">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-100 text-blue-700 text-xs font-bold">TS</span>
+                  TypeScript
+                </div>
+                <div className="flex items-center gap-2 font-semibold text-gray-700 text-sm sm:text-base">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-orange-100 text-orange-700 text-xs font-bold">▲</span>
+                  Next.js
+                </div>
+                <div className="flex items-center gap-2 font-semibold text-gray-700 text-sm sm:text-base">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 text-blue-600 text-xs font-bold">🔒</span>
+                  数据加密
+                </div>
+              </div>
+            </div>
+
+            {/* 承诺 */}
+            <div className="mt-6 grid gap-3 sm:grid-cols-3">
+              {[
+                { icon: '🔄', text: '不满意可重新优化' },
+                { icon: '🔒', text: '数据 24h 自动删除' },
+                { icon: '🆓', text: '30% 预览免费看' },
+              ].map((p) => (
+                <div key={p.text} className="flex items-center gap-3 rounded-xl border border-gray-100 bg-gray-50 px-4 py-3">
+                  <span className="text-xl">{p.icon}</span>
+                  <span className="text-sm font-medium text-gray-700">{p.text}</span>
                 </div>
               ))}
             </div>
