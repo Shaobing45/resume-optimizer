@@ -28,6 +28,10 @@ export async function notifyNewOrder(
   targetPosition: string,
   timestamp: string,
 ): Promise<void> {
+  const adminUrl = process.env.NEXT_PUBLIC_SITE_URL
+    ? `${process.env.NEXT_PUBLIC_SITE_URL}/admin`
+    : 'https://jianxiaoyou.xyz/admin';
+
   await sendServerChan(
     `📋 新订单待确认 — ${shortId}`,
     [
@@ -35,7 +39,8 @@ export async function notifyNewOrder(
       `**目标职位**：${targetPosition || '未填写'}`,
       `**时间**：${timestamp}`,
       '',
-      `👉 [前往后台确认](https://jianxiaoyou.xyz/admin)`,
+      `👉 [一键确认收款](${adminUrl})`,
+      `_打开链接 → 输密码 → 点确认_`,
     ].join('\n'),
   );
 }
