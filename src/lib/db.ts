@@ -7,7 +7,7 @@ import type { ResumeRecord, OptimizeStatus, KeywordMatch } from '@/types';
 const DATA_DIR = path.join(process.cwd(), 'data');
 const DB_PATH = path.join(DATA_DIR, 'resumes.db');
 
-let db: Database.Database;
+let db: Database.Database | null = null;
 
 function initDb(): Database.Database {
   if (!fs.existsSync(DATA_DIR)) {
@@ -32,10 +32,10 @@ function initDb(): Database.Database {
   return database;
 }
 
-// 模块加载时即初始化，避免多请求竞争
-db = initDb();
-
 function getDb(): Database.Database {
+  if (!db) {
+    db = initDb();
+  }
   return db;
 }
 
