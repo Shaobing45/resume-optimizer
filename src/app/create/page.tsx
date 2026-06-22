@@ -76,15 +76,15 @@ export default function CreatePage() {
     const text = rawMode
       ? rawText
       : [
-          `姓名：${data.name}`,
-          `电话：${data.phone}`,
-          `邮箱：${data.email}`,
-          `所在地：${data.location}`,
-          `个人简介：${data.summary}`,
-          `目标职位：${data.targetPosition}`,
-          data.education.map((e) => `教育经历：${e.school} ${e.degree} ${e.major} ${e.start}-${e.end}`).join('\n'),
-          `技能：${data.skills.join(', ')}`,
-          data.experience.map((e) => `工作经历：${e.company} ${e.role} ${e.start}-${e.end}\n${e.desc}`).join('\n'),
+          data.name && `姓名：${data.name}`,
+          data.targetPosition && `目标职位：${data.targetPosition}`,
+          data.phone && `电话：${data.phone}`,
+          data.email && `邮箱：${data.email}`,
+          data.location && `所在地：${data.location}`,
+          data.summary && `个人简介：${data.summary}`,
+          data.education.filter(e => e.school).map((e) => `教育经历：${e.school} ${e.degree} ${e.major} ${e.start}-${e.end}`).join('\n'),
+          data.skills.length > 0 && `技能：${data.skills.join(', ')}`,
+          data.experience.filter(e => e.company).map((e) => `工作经历：${e.company} ${e.role} ${e.start}-${e.end}\n${e.desc}`).join('\n'),
         ].filter(Boolean).join('\n\n');
 
     if (!text || text.replace(/\s/g, '').length < 10) return setError('请至少填写一些信息');
@@ -153,7 +153,9 @@ export default function CreatePage() {
                 rows={20}
                 value={rawText}
                 onChange={(e) => setRawText(e.target.value)}
-                placeholder="我叫张三，电话138xxxx，南京大学计算机专业...&#10;会Java、Spring、MySQL...&#10;在某某公司实习过..."
+              placeholder={`我叫张三，电话138xxxx，南京大学计算机专业...
+会Java、Spring、MySQL...
+在某某公司实习过...`}
                 className="w-full rounded-lg border border-gray-200 px-4 py-3 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 resize-y"
               />
               <button
