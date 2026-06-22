@@ -53,6 +53,11 @@ export default function HomeClient() {
   const [showDemo, setShowDemo] = useState(false);
   const qr = selectedTier ? QR_MAP[selectedTier] : null;
   const pricingRef = useRef<HTMLDivElement>(null);
+  const [feedback, setFeedback] = useState<{ name: string; rating: number; content: string }[]>([]);
+
+  useEffect(() => {
+    fetch('/api/feedback').then(r => r.json()).then(d => { if (d.success) setFeedback(d.data); }).catch(() => {});
+  }, []);
 
   const scrollToPricing = () => {
     pricingRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -400,6 +405,29 @@ export default function HomeClient() {
           </div>
         </div>
       </section>
+
+      {/* ==================== 真实用户评价 ==================== */}
+      {feedback.length > 0 && (
+        <section className="bg-gray-50 py-16 sm:py-20">
+          <div className="mx-auto max-w-5xl px-4">
+            <h2 className="text-center text-2xl font-bold text-gray-900 sm:text-3xl">用户真实评价</h2>
+            <p className="mt-2 text-center text-sm text-gray-500 sm:text-base">来自真实用户的反馈</p>
+            <div className="mt-8 grid gap-4 sm:grid-cols-3">
+              {feedback.slice(0, 3).map((f, i) => (
+                <div key={i} className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-gray-100 transition-all hover:shadow-md">
+                  <div className="flex gap-0.5 text-yellow-400">
+                    {Array.from({ length: f.rating }).map((_, si) => (
+                      <svg key={si} className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
+                    ))}
+                  </div>
+                  <p className="mt-2 text-sm text-gray-600 leading-relaxed">&ldquo;{f.content}&rdquo;</p>
+                  <p className="mt-3 text-xs font-medium text-gray-800">{f.name}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* ==================== FAQ ==================== */}
       <section className="bg-gray-50 py-16 sm:py-20">
