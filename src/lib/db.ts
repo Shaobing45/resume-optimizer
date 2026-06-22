@@ -4,7 +4,10 @@ import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 import type { ResumeRecord, OptimizeStatus, KeywordMatch } from '@/types';
 
-const DATA_DIR = path.join(process.cwd(), 'data');
+// Vercel serverless 环境下只有 /tmp 可写
+const DATA_DIR = process.env.VERCEL
+  ? '/tmp/data'
+  : path.join(process.cwd(), 'data');
 const DB_PATH = path.join(DATA_DIR, 'resumes.db');
 
 let db: Database.Database | null = null;
