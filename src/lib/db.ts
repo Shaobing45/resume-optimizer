@@ -1,13 +1,18 @@
 import Database from 'better-sqlite3';
+import fs from 'fs';
 import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 import type { ResumeRecord, OptimizeStatus, KeywordMatch } from '@/types';
 
-const DB_PATH = path.join(process.cwd(), 'data', 'resumes.db');
+const DATA_DIR = path.join(process.cwd(), 'data');
+const DB_PATH = path.join(DATA_DIR, 'resumes.db');
 
 let db: Database.Database;
 
 function initDb(): Database.Database {
+  if (!fs.existsSync(DATA_DIR)) {
+    fs.mkdirSync(DATA_DIR, { recursive: true });
+  }
   const database = new Database(DB_PATH);
   database.pragma('journal_mode = WAL');
   database.exec(`
