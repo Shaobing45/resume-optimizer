@@ -157,7 +157,7 @@ export default function CreatePage() {
                 className="w-full rounded-lg border border-gray-200 px-4 py-3 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 resize-y"
               />
               <button
-                onClick={() => setData({ ...data, ...INITIAL })}
+                onClick={handleGenerate}
                 className="mt-3 w-full rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-md transition-all hover:shadow-lg disabled:opacity-50"
                 disabled={loading}
               >
