@@ -31,6 +31,15 @@ function initDb(): Database.Database {
       created_at TEXT NOT NULL DEFAULT (datetime('now')),
       updated_at TEXT NOT NULL DEFAULT (datetime('now'))
     );
+    CREATE TABLE IF NOT EXISTS feedback (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      resume_id TEXT NOT NULL,
+      name TEXT NOT NULL DEFAULT '匿名用户',
+      rating INTEGER NOT NULL DEFAULT 5,
+      content TEXT NOT NULL,
+      approved INTEGER NOT NULL DEFAULT 0,
+      created_at TEXT NOT NULL DEFAULT (datetime('now'))
+    );
   `);
   return database;
 }
@@ -155,4 +164,58 @@ export function getKeywordMatch(record: ResumeRecord): KeywordMatch | undefined 
   } catch {
     return undefined;
   }
+}
+
+// ========== 用户反馈 ==========
+
+export interface Feedback {
+  id: number;
+  resume_id: string;
+  name: string;
+  rating: number;
+  content: string;
+  approved: number;
+  created_at: string;
+}
+
+// 提交反馈
+export function addFeedback(resumeId: string, name: string, rating: number, content: string): void {
+  const database = getDb();
+  const stmt = database.prepare(`
+    INSERT INTO feedback (resume_id, name, rating, content, approved)
+    VALUES (?, ?, ?, ?, 1)
+  `);
+  stmt.run(resumeId, name.slice(0, 20), Math.min(5, Math.max(1, rating)), content.slice(0, 500));
+}
+
+// 获取已审核通过的反馈
+export function getApprovedFeedback(): Feedback[] {
+  const database = getDb();
+  const stmt = database.prepare(`
+    SELECT * FROM feedback WHERE approved = 1 ORDER BY created_at DESC LIMIT 10
+  `);
+  return stmt.all() as Feedback[];
+}
+
+// 管理员获取所有反馈（待审核）
+export function getAllFeedback(): Feedback[] {
+  const database = getDb();
+  const stmt = database.prepare(`
+    SELECT * FROM feedback ORDER BY created_at DESC LIMIT 50
+  `);
+  return stmt.all() as Feedback[];
+}
+
+// 审核通过反馈
+export function approveFeedback(id: number): void {
+  const database = getDb();
+  const stmt = database.prepare(`UPDATE feedback SET approved = 1 WHERE id = ?`);
+  stmt.run(id);
+}
+
+// 删除反馈
+export function deleteFeedback(id: number): void {
+  const database = getDb();
+  const stmt = database.prepare(`DELETE FROM feedback WHERE id = ?`);
+  stmt.run(id);
 }
