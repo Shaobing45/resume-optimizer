@@ -20,7 +20,9 @@ interface ResumeData {
 const TEMPLATES = [
   { id: 'classic', name: '经典单栏', desc: '简约大方，适合所有岗位' },
   { id: 'modern', name: '现代简洁', desc: '清爽留白，适合互联网/设计' },
-  { id: 'timeline', name: '时间轴', desc: '突出时间线，适合经历丰富的' },
+  { id: 'tech', name: '技术简约', desc: '技能突出，适合技术岗' },
+  { id: 'redline', name: '红框时间轴', desc: '稳重专业，适合管理岗' },
+  { id: 'timeline', name: '蓝边时间轴', desc: '突出时间线，适合经历丰富的' },
 ];
 
 const INITIAL: ResumeData = {
@@ -87,11 +89,33 @@ export default function CreatePage() {
     setPdfExporting(true);
     try {
       const [{ default: jsPDF }, { default: html2canvas }] = await Promise.all([import('jspdf'), import('html2canvas')]);
-      const canvas = await html2canvas(previewRef.current, { scale: 2, useCORS: true, logging: false, backgroundColor: '#ffffff' });
+      const el = previewRef.current;
+      // 先克隆元素并去除高度限制
+      const clone = el.cloneNode(true) as HTMLElement;
+      clone.style.maxHeight = 'none';
+      clone.style.overflow = 'visible';
+      clone.style.position = 'absolute';
+      clone.style.left = '-9999px';
+      clone.style.width = '800px';
+      document.body.appendChild(clone);
+
+      const canvas = await html2canvas(clone, { scale: 2, useCORS: true, logging: false, backgroundColor: '#ffffff', width: 800 });
+      document.body.removeChild(clone);
+
       const pdf = new jsPDF('p', 'mm', 'a4');
-      const imgW = 210;
-      const imgH = (canvas.height * imgW) / canvas.width;
-      pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, imgW, imgH);
+      const pdfW = 210;
+      const pdfH = (canvas.height * pdfW) / canvas.width;
+      const pageH = 297; // A4 height in mm
+      let pos = 0;
+      let page = 0;
+
+      while (pos < pdfH) {
+        if (page > 0) pdf.addPage();
+        pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, -pos, pdfW, pdfH);
+        pos += pageH;
+        page++;
+      }
+
       pdf.save(`${data.name || '简历'}.pdf`);
     } catch { /* ignore */ }
     setPdfExporting(false);
@@ -419,6 +443,87 @@ function ResumePreview({ data, template }: { data: ResumeData; template: string 
                 <p className="text-[10px] font-semibold text-gray-800">{e.company} <span className="font-normal text-gray-400">· {e.role}</span></p>
                 <p className="text-[9px] text-gray-400">{e.start}-{e.end}</p>
                 <p className="text-[10px] text-gray-600 mt-0.5">{e.desc}</p>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  if (template === 'tech') {
+    return (
+      <div className={`${baseStyle} p-2`}>
+        {/* 头部蓝色区块 */}
+        <div className="bg-gradient-to-r from-blue-600 to-blue-800 -mx-2 -mt-2 p-4 mb-3 rounded-t-xl text-white">
+          <div className="flex items-center gap-3">
+            {data.photo && <img src={data.photo} alt="" className="w-14 h-14 rounded-full border-2 border-white/60 object-cover flex-shrink-0" />}
+            <div>
+              <h1 className="text-lg font-bold">{data.name || '（姓名）'}</h1>
+              <p className="text-[10px] text-blue-100">{data.targetPosition}</p>
+              <p className="text-[8px] text-blue-200 mt-0.5">{[data.phone, data.email, data.location].filter(Boolean).join(' | ')}</p>
+            </div>
+          </div>
+        </div>
+        {data.summary && <p className="mb-2 text-[10px] text-gray-600 leading-relaxed">{data.summary}</p>}
+        <div className="mb-2 grid grid-cols-2 gap-2">
+          <div>
+            <h2 className="text-[9px] font-bold text-blue-700 uppercase tracking-wider mb-1">技能</h2>
+            <div className="flex flex-wrap gap-1">{data.skills.map((s,i) => <span key={i} className="rounded bg-blue-50 px-2 py-0.5 text-[8px] font-medium text-blue-700">{s}</span>)}</div>
+          </div>
+          <div>
+            <h2 className="text-[9px] font-bold text-blue-700 uppercase tracking-wider mb-1">教育</h2>
+            {data.education.map((e,i) => e.school && <p key={i} className="text-[9px] text-gray-600">{e.school}<br/><span className="text-[8px] text-gray-400">{e.major} · {e.start}-{e.end}</span></p>)}
+          </div>
+        </div>
+        {data.experience[0]?.company && (
+          <div className="border-t border-gray-100 pt-2">
+            <h2 className="text-[9px] font-bold text-blue-700 uppercase tracking-wider mb-1">工作经历</h2>
+            {data.experience.map((e,i) => e.company && (
+              <div key={i} className="mb-1.5 pb-1.5 border-b border-gray-50 last:border-0">
+                <p className="text-[9px] font-semibold text-gray-800">{e.role} · {e.company} <span className="font-normal text-gray-400 text-[8px]">({e.start}-{e.end})</span></p>
+                <p className="text-[9px] text-gray-600 mt-0.5">{e.desc}</p>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  if (template === 'redline') {
+    return (
+      <div className={`${baseStyle} p-2`}>
+        <div className="border-l-4 border-red-500 pl-3 mb-3">
+          <div className="flex items-center gap-3">
+            {data.photo && <img src={data.photo} alt="" className="w-12 h-12 rounded-lg object-cover flex-shrink-0" />}
+            <div>
+              <h1 className="text-lg font-bold text-gray-900">{data.name || '（姓名）'}</h1>
+              <p className="text-[10px] text-red-600 font-medium">{data.targetPosition}</p>
+              <p className="text-[8px] text-gray-400">{[data.phone, data.email, data.location].filter(Boolean).join(' | ')}</p>
+            </div>
+          </div>
+        </div>
+        {data.summary && <p className="mb-2 text-[9px] text-gray-600 italic border-l-2 border-gray-200 pl-2">"{data.summary}"</p>}
+        <div className="mb-2 grid grid-cols-2 gap-2">
+          <div>
+            <h2 className="text-[9px] font-bold text-gray-700 border-b border-red-200 pb-0.5 mb-1">教育背景</h2>
+            {data.education.map((e,i) => e.school && <p key={i} className="text-[9px] text-gray-600">{e.school} · {e.major} ({e.start}-{e.end})</p>)}
+          </div>
+          <div>
+            <h2 className="text-[9px] font-bold text-gray-700 border-b border-red-200 pb-0.5 mb-1">技能</h2>
+            <div className="flex flex-wrap gap-1">{data.skills.map((s,i) => <span key={i} className="rounded-sm border border-red-200 px-1.5 py-0.5 text-[8px] text-red-700">{s}</span>)}</div>
+          </div>
+        </div>
+        {data.experience[0]?.company && (
+          <div>
+            <h2 className="text-[9px] font-bold text-gray-700 border-b border-red-200 pb-0.5 mb-1">工作经历</h2>
+            {data.experience.map((e,i) => e.company && (
+              <div key={i} className="mb-2 relative pl-3 border-l border-red-200">
+                <div className="absolute -left-[3px] top-1 h-1.5 w-1.5 rounded-full bg-red-400" />
+                <p className="text-[9px] font-semibold text-gray-800">{e.role}，{e.company}</p>
+                <p className="text-[8px] text-gray-400">{e.start}-{e.end}</p>
+                <p className="text-[9px] text-gray-600">{e.desc}</p>
               </div>
             ))}
           </div>
