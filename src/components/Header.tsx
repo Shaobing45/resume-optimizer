@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
+import DarkModeToggle from './DarkModeToggle';
 
 export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -43,8 +44,10 @@ export default function Header() {
           </Link>
         </nav>
 
-        {/* 移动端菜单按钮 */}
-        <button
+        {/* 暗黑模式 + 移动端菜单按钮 */}
+        <div className="flex items-center gap-1">
+          <DarkModeToggle />
+          <button
           className="rounded-lg p-2.5 text-gray-600 hover:bg-gray-100 md:hidden"
           onClick={() => setMobileOpen(!mobileOpen)}
           aria-label="菜单"
@@ -57,6 +60,7 @@ export default function Header() {
             )}
           </svg>
         </button>
+      </div>
       </div>
 
       {/* 移动端菜单 */}
