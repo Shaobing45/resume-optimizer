@@ -72,6 +72,14 @@ export default function CreatePage() {
     if (data.experience.length > 1) setData({ ...data, experience: data.experience.filter((_, idx) => idx !== i) });
   };
 
+  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || file.size > 2 * 1024 * 1024) return;
+    const reader = new FileReader();
+    reader.onload = () => { setData({ ...data, photo: reader.result as string }); };
+    reader.readAsDataURL(file);
+  };
+
   const handleGenerate = async () => {
     const text = rawMode
       ? rawText
@@ -171,12 +179,28 @@ export default function CreatePage() {
             <>
               {/* 基本信息 */}
               <Section title="📋 基本信息">
-                <div className="grid grid-cols-2 gap-3">
+                <div className="flex gap-4 mb-3">
+                  {/* 照片上传 */}
+                  <div className="flex-shrink-0">
+                    <label className="relative flex h-20 w-20 cursor-pointer items-center justify-center overflow-hidden rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 hover:border-blue-400 transition-colors group">
+                      {data.photo ? (
+                        <img src={data.photo} alt="照片" className="h-full w-full object-cover" />
+                      ) : (
+                        <span className="text-2xl text-gray-300 group-hover:text-blue-400">📷</span>
+                      )}
+                      <input type="file" accept="image/*" onChange={handlePhotoUpload} className="absolute inset-0 cursor-pointer opacity-0" title="上传照片" />
+                    </label>
+                    {data.photo && (
+                      <button onClick={() => update('photo', '')} className="mt-1 w-full text-center text-[10px] text-red-400 hover:text-red-600">移除</button>
+                    )}
+                  </div>
+                  <div className="grid grid-cols-2 gap-3 flex-1">
                   <Input label="姓名" value={data.name} onChange={(v) => update('name', v)} />
                   <Input label="目标职位" value={data.targetPosition} onChange={(v) => update('targetPosition', v)} />
                   <Input label="电话" value={data.phone} onChange={(v) => update('phone', v)} />
                   <Input label="邮箱" value={data.email} onChange={(v) => update('email', v)} />
                   <Input label="所在地" value={data.location} onChange={(v) => update('location', v)} />
+                </div>
                 </div>
               </Section>
 
