@@ -69,24 +69,32 @@ export default function UploadPage() {
 
       <div className="mt-8 space-y-6">
         {/* 套餐选择 */}
-        <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
-          <p className="mb-3 text-sm font-medium text-gray-700">选择套餐</p>
-          <div className="flex gap-2">
+        <div className="rounded-xl border border-gray-200 bg-white p-5">
+          <p className="mb-3 text-sm font-semibold text-gray-700">选择套餐</p>
+          <div className="grid gap-3 sm:grid-cols-3">
             {[
-              { key: 'single', label: '单次 ¥9.9' },
-              { key: 'pack5', label: '5次 ¥29.9' },
-              { key: 'unlimited', label: '月费 ¥49.9' },
+              { key: 'single', name: '单次 ¥9.9', features: ['AI 智能优化', 'ATS 关键词匹配', '30% 预览免费看', 'TXT/PDF 导出'] },
+              { key: 'pack5', name: '5次 ¥29.9', features: ['含单次全部功能', '多岗位定制', '优先处理', '多版本保留'] },
+              { key: 'unlimited', name: '月费 ¥49.9', features: ['含前两项全部', '无限次优化', '求职信生成', '专属优先通道'] },
             ].map((t) => (
               <button
                 key={t.key}
                 onClick={() => setSelectedTier(t.key)}
-                className={`rounded-lg px-4 py-2 text-sm font-medium transition-all ${
+                className={`rounded-xl border-2 p-3 text-left transition-all ${
                   selectedTier === t.key
-                    ? 'bg-blue-600 text-white shadow-sm'
-                    : 'bg-white text-gray-600 ring-1 ring-gray-200 hover:ring-blue-300'
+                    ? 'border-blue-500 bg-blue-50 shadow-sm'
+                    : 'border-gray-100 bg-white hover:border-blue-200'
                 }`}
               >
-                {t.label}
+                <span className="font-semibold text-sm">{t.name}</span>
+                <ul className="mt-1.5 space-y-0.5">
+                  {t.features.map((f) => (
+                    <li key={f} className="flex items-center gap-1 text-[10px] text-gray-500">
+                      <svg className="h-3 w-3 flex-shrink-0 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                      {f}
+                    </li>
+                  ))}
+                </ul>
               </button>
             ))}
           </div>
@@ -95,7 +103,7 @@ export default function UploadPage() {
         {/* 岗位信息（新增） */}
         <div className="rounded-xl border border-gray-200 bg-white p-5">
           <h3 className="text-sm font-semibold text-gray-900">
-            🎯 目标岗位 <span className="text-gray-400 font-normal">（仅 ¥9.9 套餐可填，用于 AI 关键词匹配）</span>
+            🎯 目标岗位 <span className="text-gray-400 font-normal">（填得越详细，AI 匹配越精准）</span>
           </h3>
           <div className="mt-3 space-y-3">
             <div>
