@@ -24,29 +24,35 @@ const FAQS = [
   { q: '有售后支持吗？', a: '如果优化结果不满意，可以联系客服重新优化，直至满意为止。' },
 ];
 
-const DEMO_BEFORE = `张三
+const DEMO_BEFORE = `王磊
 ---
-联系方式：138xxxxxx | email@xx.com
+电话：139-1234-5678 | 邮箱：wanglei@email.com
 
 工作经历：
-负责公司产品的日常运营和维护工作
-参与多个项目的开发和上线
-协助团队完成各项任务
+在某某科技有限公司担任后端开发
+参与公司核心项目的研发和维护
+协助团队完成项目上线
 
-教育经历：
-某某大学 计算机专业`;
+教育背景：
+某985大学 计算机科学与技术 本科
 
-const DEMO_AFTER = `张三
+技能：
+Java、MySQL、Spring Boot`;
+
+const DEMO_AFTER = `王磊
 ---
-联系方式：138xxxxxx | email@xx.com | 5年全栈经验
+电话：139-1234-5678 | 邮箱：wanglei@email.com | 3年后端开发经验
 
 工作经历：
-主导公司核心产品从0到1的全栈开发，日活突破50万
-重构微服务架构，系统响应时间降低60%，节省40%服务器成本
-打造自动化部署流水线，团队交付效率提升3倍
+主导公司核心业务系统的架构升级，日均处理请求量提升至 50 万
+重构订单模块，系统响应时间从 2.3s 降至 0.4s，降低 82%
+打造自动化单元测试体系，代码覆盖率从 15% 提升至 85%，线上 Bug 减少 60%
 
-教育经历：
-某某大学 计算机专业 本科`;
+教育背景：
+某985大学 计算机科学与技术 本科
+
+技能：
+Java · Spring Boot · MySQL · Redis · Docker · Git`;
 
 export default function HomeClient() {
   const [selectedTier, setSelectedTier] = useState<string | null>(null);
@@ -131,12 +137,6 @@ export default function HomeClient() {
               开始优化简历
               <svg className="h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
             </Link>
-            <button
-              onClick={scrollToPricing}
-              className="inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-xl border-2 border-blue-200 bg-white/80 px-8 py-4 text-base font-semibold text-blue-600 backdrop-blur-sm transition-all hover:border-blue-400 hover:bg-blue-50 hover:-translate-y-0.5"
-            >
-              查看套餐 →
-            </button>
           </div>
 
           {/* 统计数字 */}
@@ -463,9 +463,6 @@ export default function HomeClient() {
             <Link href="/upload" className="group inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-xl bg-white px-8 py-4 text-sm font-bold text-blue-700 shadow-lg transition-all hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0">
               立即开始
               <svg className="h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
-            </Link>
-            <Link href="/create" className="inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-xl border-2 border-white/30 px-8 py-4 text-sm font-semibold text-white transition-all hover:border-white/60 hover:bg-white/10">
-              先试试免费创建
             </Link>
           </div>
         </div>
