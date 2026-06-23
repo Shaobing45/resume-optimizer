@@ -1,8 +1,10 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+
+const CACHE_KEY = 'jxy-resume-data';
 
 interface ResumeData {
   name: string;
@@ -44,6 +46,30 @@ export default function CreatePage() {
   const [error, setError] = useState('');
   const [pdfExporting, setPdfExporting] = useState(false);
   const previewRef = useRef<HTMLDivElement>(null);
+
+  // 恢复缓存的简历数据
+  useEffect(() => {
+    try {
+      const cached = localStorage.getItem(CACHE_KEY);
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        setData(parsed.data);
+        setTemplate(parsed.template || 'classic');
+        setRawText(parsed.rawText || '');
+        if (parsed.rawMode) setRawMode(true);
+      }
+    } catch { /* ignore */ }
+  }, []);
+
+  // 自动保存到 localStorage
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      localStorage.setItem(CACHE_KEY, JSON.stringify({
+        data, template, rawText, rawMode, savedAt: new Date().toISOString()
+      }));
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [data, template, rawText, rawMode]);
 
   const update = (field: keyof ResumeData, value: unknown) => setData({ ...data, [field]: value });
 
@@ -367,10 +393,16 @@ export default function CreatePage() {
           </div>
           <div className="mt-3 flex gap-2">
             <button onClick={handleDownloadPdf} disabled={pdfExporting} className="flex-1 rounded-lg bg-blue-600 px-4 py-2.5 text-xs font-semibold text-white hover:bg-blue-700 disabled:opacity-50 transition-all">
-              {pdfExporting ? '⏳ 导出中…' : '📥 下载 PDF 简历'}
+              {pdfExporting ? '⏳ 导出中…' : '📥 下载 PDF'}
             </button>
             <button onClick={handleGenerate} disabled={loading} className="flex-1 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-2.5 text-xs font-semibold text-white shadow-md hover:shadow-lg disabled:opacity-50 transition-all">
               {loading ? '⏳ 生成中…' : '✨ AI 生成'}
+            </button>
+            <button onClick={async () => {
+              try { await navigator.share({ title: '我的简历', text: `查看 ${data.name || '我的'} 简历`, url: window.location.href }); }
+              catch { navigator.clipboard?.writeText(window.location.href).then(() => alert('链接已复制')).catch(() => {}); }
+            }} className="rounded-lg border border-gray-200 px-3 py-2.5 text-xs font-medium text-gray-600 hover:bg-gray-50 transition-all" title="分享">
+              🔗
             </button>
           </div>
         </div>
