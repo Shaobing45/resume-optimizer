@@ -67,14 +67,7 @@ function buildPdfHtml(text: string): string {
   return `<!DOCTYPE html>
 <html><head><meta charset="utf-8"></head>
 <body style="font-family:'PingFang SC','Microsoft YaHei',sans-serif;padding:40px 48px;max-width:720px;margin:0 auto;">
-<div style="border-bottom:3px solid #2563eb;padding-bottom:10px;margin-bottom:20px;">
-  <h1 style="font-size:20px;margin:0;color:#0f172a;">简小优 · AI 优化简历</h1>
-  <p style="font-size:11px;color:#94a3b8;margin:4px 0 0;">${new Date().toLocaleDateString("zh-CN")}</p>
-</div>
 <div style="white-space:pre-wrap;">${body}</div>
-<div style="border-top:1px solid #e2e8f0;margin-top:32px;padding-top:10px;font-size:10px;color:#94a3b8;text-align:center;">
-  由 简小优 AI 生成
-</div>
 </body></html>`;
 }
 
