@@ -174,6 +174,19 @@ export default function CreatePage() {
             /* 自由输入模式 */
             <div className="rounded-xl border border-gray-200 bg-white p-5">
               <label className="block text-sm font-semibold text-gray-700 mb-2">随便写你的经历</label>
+              {/* 自由模式照片上传 */}
+              <div className="mb-3">
+                <label className="relative inline-flex h-16 w-16 cursor-pointer items-center justify-center overflow-hidden rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 hover:border-blue-400 transition-colors">
+                  {data.photo ? (
+                    <img src={data.photo} alt="照片" className="h-full w-full object-cover" />
+                  ) : (
+                    <span className="text-xl text-gray-300">📷</span>
+                  )}
+                  <input type="file" accept="image/*" onChange={handlePhotoUpload} className="absolute inset-0 cursor-pointer opacity-0" title="上传照片" />
+                </label>
+                {data.photo && <button onClick={() => update('photo', '')} className="ml-2 text-[10px] text-red-400 hover:text-red-600">移除照片</button>}
+                <span className="ml-2 text-[10px] text-gray-400">（选填，证件照）</span>
+              </div>
               <textarea
                 rows={20}
                 value={rawText}
@@ -297,13 +310,15 @@ export default function CreatePage() {
               </Section>
 
               {/* AI 生成按钮 */}
-              <button
-                onClick={handleGenerate}
-                disabled={loading}
-                className="w-full rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-3.5 text-sm font-semibold text-white shadow-md transition-all hover:shadow-lg disabled:opacity-50"
-              >
-                {loading ? '🤖 AI 正在生成…' : '✨ AI 优化并生成简历'}
-              </button>
+              {!rawMode && (
+                <button
+                  onClick={handleGenerate}
+                  disabled={loading}
+                  className="w-full rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-3.5 text-sm font-semibold text-white shadow-md transition-all hover:shadow-lg disabled:opacity-50"
+                >
+                  {loading ? '🤖 AI 正在生成…' : '✨ AI 优化并生成简历'}
+                </button>
+              )}
             </>
           )}
 
@@ -329,6 +344,9 @@ export default function CreatePage() {
           <div className="mt-3 flex gap-2">
             <button onClick={handleDownloadPdf} disabled={pdfExporting} className="flex-1 rounded-lg bg-blue-600 px-4 py-2.5 text-xs font-semibold text-white hover:bg-blue-700 disabled:opacity-50 transition-all">
               {pdfExporting ? '⏳ 导出中…' : '📥 下载 PDF 简历'}
+            </button>
+            <button onClick={handleGenerate} disabled={loading} className="flex-1 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-2.5 text-xs font-semibold text-white shadow-md hover:shadow-lg disabled:opacity-50 transition-all">
+              {loading ? '⏳ 生成中…' : '✨ AI 生成'}
             </button>
           </div>
         </div>
