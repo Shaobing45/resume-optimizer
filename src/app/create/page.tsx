@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
@@ -40,6 +40,8 @@ export default function CreatePage() {
   const [rawText, setRawText] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [pdfExporting, setPdfExporting] = useState(false);
+  const previewRef = useRef<HTMLDivElement>(null);
 
   const update = (field: keyof ResumeData, value: unknown) => setData({ ...data, [field]: value });
 
@@ -78,6 +80,21 @@ export default function CreatePage() {
     const reader = new FileReader();
     reader.onload = () => { setData({ ...data, photo: reader.result as string }); };
     reader.readAsDataURL(file);
+  };
+
+  const handleDownloadPdf = async () => {
+    if (!previewRef.current) return;
+    setPdfExporting(true);
+    try {
+      const [{ default: jsPDF }, { default: html2canvas }] = await Promise.all([import('jspdf'), import('html2canvas')]);
+      const canvas = await html2canvas(previewRef.current, { scale: 2, useCORS: true, logging: false, backgroundColor: '#ffffff' });
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const imgW = 210;
+      const imgH = (canvas.height * imgW) / canvas.width;
+      pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, imgW, imgH);
+      pdf.save(`${data.name || '简历'}.pdf`);
+    } catch { /* ignore */ }
+    setPdfExporting(false);
   };
 
   const handleGenerate = async () => {
@@ -305,9 +322,14 @@ export default function CreatePage() {
             <span className="text-[10px] text-gray-400">{TEMPLATES.find((t) => t.id === template)?.name}</span>
           </div>
           <div className="rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden">
-            <div className="aspect-[210/297] max-h-[800px] overflow-y-auto p-4 sm:p-6">
+            <div ref={previewRef} className="aspect-[210/297] max-h-[800px] overflow-y-auto p-4 sm:p-6 bg-white">
               <ResumePreview data={previewData} template={template} />
             </div>
+          </div>
+          <div className="mt-3 flex gap-2">
+            <button onClick={handleDownloadPdf} disabled={pdfExporting} className="flex-1 rounded-lg bg-blue-600 px-4 py-2.5 text-xs font-semibold text-white hover:bg-blue-700 disabled:opacity-50 transition-all">
+              {pdfExporting ? '⏳ 导出中…' : '📥 下载 PDF 简历'}
+            </button>
           </div>
         </div>
       </div>
