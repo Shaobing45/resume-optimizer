@@ -9,9 +9,32 @@ export default function AIChat() {
   const [msgs, setMsgs] = useState<Msg[]>([{ role: 'assistant', content: '👋 你好！我是简历助手，有什么可以帮你？' }]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const [pos, setPos] = useState({ x: 20, y: 80 });
+  const [dragging, setDragging] = useState(false);
+  const dragRef = useRef<{ startX: number; startY: number; btnX: number; btnY: number }>({ startX: 0, startY: 0, btnX: 0, btnY: 0 });
+  const isDragging = useRef(false);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [msgs]);
+
+  const onDragStart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    isDragging.current = false;
+    setDragging(true);
+    dragRef.current = { startX: e.clientX, startY: e.clientY, btnX: pos.x, btnY: pos.y };
+  };
+
+  useEffect(() => {
+    if (!dragging) return;
+    const onMove = (e: MouseEvent) => {
+      isDragging.current = true;
+      setPos({ x: dragRef.current.btnX + e.clientX - dragRef.current.startX, y: dragRef.current.btnY + e.clientY - dragRef.current.startY });
+    };
+    const onUp = () => { setDragging(false); setTimeout(() => { isDragging.current = false; }, 0); };
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp);
+    return () => { window.removeEventListener('mousemove', onMove); window.removeEventListener('mouseup', onUp); };
+  }, [dragging]);
 
   const send = async () => {
     if (!input.trim() || loading) return;
@@ -33,10 +56,12 @@ export default function AIChat() {
     <>
       {/* 浮动按钮 */}
       <button
-        onClick={() => setOpen(!open)}
-        className={`fixed bottom-5 right-5 z-50 flex h-14 w-14 items-center justify-center rounded-full shadow-lg transition-all hover:scale-110 ${
-          open ? 'bg-gray-200 text-gray-700' : 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white'
-        }`}
+        onClick={() => { if (!isDragging.current) setOpen(!open); }}
+        onMouseDown={onDragStart}
+        style={{ right: pos.x, bottom: pos.y }}
+        className={`fixed z-50 flex h-14 w-14 items-center justify-center rounded-full shadow-lg transition-colors ${
+          dragging ? 'cursor-grabbing' : 'cursor-grab hover:scale-110'
+        } ${open ? 'bg-gray-200 text-gray-700' : 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white'}`}
         title="AI 简历助手"
       >
         <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -50,7 +75,9 @@ export default function AIChat() {
 
       {/* 聊天窗口 */}
       {open && (
-        <div className="fixed bottom-20 right-5 z-50 flex h-[420px] w-[340px] max-w-[calc(100vw-40px)] flex-col rounded-2xl border border-gray-200 bg-white shadow-2xl animate-scale-in">
+        <div className="fixed z-50 flex h-[420px] w-[340px] max-w-[calc(100vw-40px)] flex-col rounded-2xl border border-gray-200 bg-white shadow-2xl animate-scale-in"
+          style={{ right: pos.x, bottom: pos.y + 70 }}
+        >
           {/* 头部 */}
           <div className="flex items-center justify-between rounded-t-2xl bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-3">
             <span className="text-sm font-semibold text-white">🤖 AI 简历助手</span>
