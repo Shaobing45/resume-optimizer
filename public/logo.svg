@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 60" width="200" height="60">
+  <defs>
+    <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2563eb" />
+      <stop offset="100%" stop-color="#7c3aed" />
+    </linearGradient>
+  </defs>
+  <!-- 背景微光图标 -->
+  <rect x="2" y="2" width="44" height="44" rx="10" fill="url(#logoGrad)" />
+  <!-- AI 字母 -->
+  <text x="9" y="33" font-family="Arial, sans-serif" font-weight="bold" font-size="22" fill="white">AI</text>
+  <!-- 简小优 文字 -->
+  <text x="54" y="32" font-family="'PingFang SC','Microsoft YaHei',sans-serif" font-weight="800" font-size="24" fill="#0f172a">简小优</text>
+  <!-- 小标语 -->
+  <text x="54" y="48" font-family="'PingFang SC','Microsoft YaHei',sans-serif" font-weight="400" font-size="9" fill="#64748b">AI 简历优化</text>
+</svg>
