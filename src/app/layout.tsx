@@ -32,6 +32,7 @@ export const metadata: Metadata = {
     follow: true,
   },
   referrer: "origin-when-cross-origin",
+  icons: { icon: "/logo.svg" },
   openGraph: {
     type: "website",
     locale: "zh_CN",
