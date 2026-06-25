@@ -20,12 +20,10 @@ export default function Header() {
         {/* Logo */}
         <Link
           href="/"
-          className="flex items-center gap-2 text-xl font-bold text-gray-900"
+          className="flex items-center gap-2 font-bold text-gray-900"
         >
-          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-600 text-white text-sm">
-            AI
-          </span>
-          <span>简小优</span>
+          <img src="/logo.svg" alt="简小优" className="h-9 w-auto" />
+          <span className="hidden sm:inline text-lg">简小优</span>
         </Link>
 
         {/* 桌面导航 */}
