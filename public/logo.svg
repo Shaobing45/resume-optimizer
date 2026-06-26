@@ -1,16 +1,53 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 60" width="200" height="60">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 64" width="220" height="64">
   <defs>
-    <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+    <!-- Logo 图标渐变 -->
+    <linearGradient id="iconGrad" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#2563eb" />
+      <stop offset="50%" stop-color="#6366f1" />
       <stop offset="100%" stop-color="#7c3aed" />
     </linearGradient>
+    <!-- 火花渐变 -->
+    <linearGradient id="sparkGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f59e0b" />
+      <stop offset="100%" stop-color="#ef4444" />
+    </linearGradient>
+    <!-- 阴影 -->
+    <filter id="shadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#2563eb" flood-opacity="0.25"/>
+    </filter>
   </defs>
-  <!-- 背景微光图标 -->
-  <rect x="2" y="2" width="44" height="44" rx="10" fill="url(#logoGrad)" />
-  <!-- AI 字母 -->
-  <text x="9" y="33" font-family="Arial, sans-serif" font-weight="bold" font-size="22" fill="white">AI</text>
-  <!-- 简小优 文字 -->
-  <text x="54" y="32" font-family="'PingFang SC','Microsoft YaHei',sans-serif" font-weight="800" font-size="24" fill="#0f172a">简小优</text>
+
+  <!-- ===== 图标部分 ===== -->
+  <!-- 背景底板 -->
+  <rect x="0" y="0" width="52" height="52" rx="12" fill="url(#iconGrad)" filter="url(#shadow)" />
+
+  <!-- 文档主体 -->
+  <rect x="14" y="12" width="24" height="28" rx="3" fill="white" opacity="0.95" />
+
+  <!-- 文档折角 -->
+  <path d="M30 12 L30 18 L38 18 Z" fill="#e2e8f0" />
+
+  <!-- 文档内文字线 -->
+  <rect x="18" y="20" width="12" height="2" rx="1" fill="#cbd5e1" />
+  <rect x="18" y="25" width="16" height="2" rx="1" fill="#cbd5e1" />
+  <rect x="18" y="30" width="10" height="2" rx="1" fill="#cbd5e1" />
+
+  <!-- AI 火花（四角星） -->
+  <g transform="translate(36, 16)">
+    <!-- 主星 -->
+    <path d="M4 0 L5 3 L8 4 L5 5 L4 8 L3 5 L0 4 L3 3 Z" fill="#f59e0b" />
+    <!-- 小光晕 -->
+    <circle cx="4" cy="4" r="6" fill="none" stroke="#fbbf24" stroke-width="0.5" opacity="0.6" />
+  </g>
+
+  <!-- ===== 品牌文字 ===== -->
+  <!-- 主品牌名 -->
+  <text x="62" y="30" font-family="'PingFang SC','Microsoft YaHei',-apple-system,sans-serif" font-weight="800" font-size="24" fill="#0f172a" letter-spacing="2">
+    简小优
+  </text>
+
   <!-- 小标语 -->
-  <text x="54" y="48" font-family="'PingFang SC','Microsoft YaHei',sans-serif" font-weight="400" font-size="9" fill="#64748b">AI 简历优化</text>
+  <text x="62" y="48" font-family="'PingFang SC','Microsoft YaHei',-apple-system,sans-serif" font-weight="400" font-size="10" fill="#94a3b8" letter-spacing="1">
+    AI 简历优化 · 智能 · 专业
+  </text>
 </svg>
