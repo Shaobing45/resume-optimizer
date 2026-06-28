@@ -4,6 +4,8 @@ import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import InviteSection from './InviteSection';
+import Hero3D from './Hero3D';
+import { motion } from 'framer-motion';
 
 const QR_MAP: Record<string, { src: string; price: string; label: string }> = {
   single: { src: '/qr-pay.jpg', price: '¥9.9', label: '单次优化' },
@@ -108,13 +110,16 @@ export default function HomeClient() {
         </div>
       </nav>
       {/* ==================== HERO ==================== */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-blue-50 via-white to-indigo-50">
-        {/* 装饰浮动元素 */}
-        <div className="absolute left-[10%] top-[15%] h-32 w-32 rounded-full bg-blue-300/20 blur-2xl animate-float" style={{ animationDelay: '0s' }} />
-        <div className="absolute right-[15%] top-[40%] h-48 w-48 rounded-full bg-indigo-300/15 blur-3xl animate-float" style={{ animationDelay: '1.5s' }} />
-        <div className="absolute left-[20%] bottom-[20%] h-24 w-24 rounded-full bg-purple-300/15 blur-2xl animate-float" style={{ animationDelay: '3s' }} />
+      <section className="relative overflow-hidden bg-gradient-to-br from-blue-50 via-white to-indigo-50 min-h-[80vh] flex items-center">
+        {/* 3D 背景 */}
+        <Hero3D />
 
-        <div className="relative mx-auto max-w-6xl px-4 py-16 sm:py-20 lg:py-28">
+        {/* 装饰浮动元素 */}
+        <div className="absolute left-[10%] top-[15%] h-32 w-32 rounded-full bg-blue-300/20 blur-2xl animate-float" style={{ animationDelay: '0s', zIndex: 1 }} />
+        <div className="absolute right-[15%] top-[40%] h-48 w-48 rounded-full bg-indigo-300/15 blur-3xl animate-float" style={{ animationDelay: '1.5s', zIndex: 1 }} />
+        <div className="absolute left-[20%] bottom-[20%] h-24 w-24 rounded-full bg-purple-300/15 blur-2xl animate-float" style={{ animationDelay: '3s', zIndex: 1 }} />
+
+        <div className="relative mx-auto max-w-6xl px-4 py-16 sm:py-20 lg:py-28" style={{ zIndex: 2 }}>
           {/* 徽章 — 带闪烁 */}
           <div className="mb-6 flex justify-center">
             <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-100 px-4 py-1.5 text-xs font-medium text-blue-700 animate-fade-in-down">
@@ -260,7 +265,7 @@ export default function HomeClient() {
                 <div
                   key={f.title}
                   className="group rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-100 transition-all hover:shadow-lg hover:-translate-y-1 hover:ring-blue-200"
-                  style={{ animationDelay: `${i * 0.1}s` }}
+                  style={{ opacity: visibleSections.features ? 1 : 0, transform: visibleSections.features ? 'translateY(0)' : 'translateY(20px)', transition: `all 0.5s ease ${i * 0.15}s` }}
                 >
                   <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-blue-50 to-indigo-50 text-xl transition-transform group-hover:scale-110">
                     {f.icon}
