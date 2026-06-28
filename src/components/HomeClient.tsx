@@ -130,26 +130,38 @@ export default function HomeClient() {
             </span>
           </div>
 
-          {/* 主标题 — 渐变 */}
-          <h1 className="mx-auto max-w-4xl text-center text-3xl font-extrabold leading-tight tracking-tight text-gray-900 sm:text-4xl lg:text-5xl animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
-            <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
+          {/* 主标题 — 双层光效 */}
+          <h1 className="mx-auto max-w-4xl text-center text-3xl font-black leading-tight tracking-tight sm:text-5xl lg:text-6xl animate-fade-in-up relative" style={{ animationDelay: '0.1s' }}>
+            {/* 背景光晕 */}
+            <span className="absolute inset-0 -top-10 -z-10 mx-auto h-40 w-80 rounded-full bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-indigo-500/20 blur-3xl" />
+            <span className="bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent drop-shadow-[0_0_30px_rgba(99,102,241,0.3)]">
               让你的简历
             </span>
             <br />
-            在 <span className="text-blue-600 relative">3 分钟<span className="absolute -bottom-1 left-0 h-1 w-full rounded-full bg-gradient-to-r from-blue-400 to-purple-400" /></span> 脱胎换骨
+            <span className="relative inline-block">
+              在 <span className="relative bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">3 分钟</span>
+            </span>{' '}<span className="text-white drop-shadow-[0_0_20px_rgba(99,102,241,0.5)]">脱胎换骨</span>
           </h1>
-          <p className="mx-auto mt-4 max-w-2xl text-center text-base sm:text-lg text-gray-500 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-            <TypewriterText text="AI 智能分析岗位描述 → 简历关键词优化 → ATS 格式适配" />
+          <p className="mx-auto mt-6 max-w-2xl text-center text-lg sm:text-xl text-gray-300 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+            <TypewriterText text="DeepSeek AI 驱动 · 岗位智能匹配 · 一键导出PDF" />
           </p>
 
-          {/* CTA */}
-          <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
+          {/* CTA — 发光按钮 */}
+          <div className="mt-10 flex flex-col items-center gap-3 sm:flex-row sm:justify-center animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
             <Link
               href="/upload"
-              className="group inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-xl bg-blue-600 px-8 py-4 text-base font-semibold text-white shadow-lg shadow-blue-200/50 transition-all hover:bg-blue-700 hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0"
+              className="group relative inline-flex w-full sm:w-auto items-center justify-center gap-2 overflow-hidden rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 px-10 py-4 text-base font-bold text-white shadow-[0_0_40px_rgba(99,102,241,0.4)] transition-all duration-300 hover:shadow-[0_0_60px_rgba(99,102,241,0.6)] hover:scale-105 active:scale-100"
             >
-              开始优化简历
-              <svg className="h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
+              <span className="absolute inset-0 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 opacity-0 transition-opacity group-hover:opacity-100 blur-xl" />
+              <span className="relative z-10">🚀 开始优化简历</span>
+              <svg className="relative z-10 h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
+            </Link>
+            <Link
+              href="/create"
+              className="group inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/10 px-8 py-4 text-base font-medium text-white backdrop-blur-sm transition-all hover:bg-white/20 hover:border-white/30"
+            >
+              从零创建简历
+              <svg className="h-4 w-4 opacity-50 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
             </Link>
           </div>
 
