@@ -3,11 +3,12 @@
 import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import InviteSection from './InviteSection';
 
 const QR_MAP: Record<string, { src: string; price: string; label: string }> = {
   single: { src: '/qr-pay.jpg', price: '¥9.9', label: '单次优化' },
-  pack5: { src: '/qr-pay-5.jpg', price: '¥29.9', label: '5次套餐' },
-  unlimited: { src: '/qr-pay-month.jpg', price: '¥49.9', label: '月度无限' },
+  pack5: { src: '/qr-pay.jpg', price: '¥29.9', label: '5次套餐' },
+  unlimited: { src: '/qr-pay.jpg', price: '¥39.9', label: '月度无限' },
 };
 
 const FEATURES = [
@@ -98,6 +99,14 @@ export default function HomeClient() {
 
   return (
     <div className="overflow-x-hidden">
+      {/* ==================== 顶部导航 ==================== */}
+      <nav className="flex items-center justify-between border-b border-gray-100 bg-white/80 backdrop-blur-sm px-4 sm:px-6 lg:px-8 py-3">
+        <Link href="/" className="text-lg font-bold gradient-text">简小优</Link>
+        <div className="flex items-center gap-3">
+          <Link href="/login" className="text-sm font-medium text-gray-600 hover:text-gray-900">登录</Link>
+          <Link href="/register" className="rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">注册</Link>
+        </div>
+      </nav>
       {/* ==================== HERO ==================== */}
       <section className="relative overflow-hidden bg-gradient-to-br from-blue-50 via-white to-indigo-50">
         {/* 装饰浮动元素 */}
@@ -138,6 +147,9 @@ export default function HomeClient() {
               <svg className="h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
             </Link>
           </div>
+
+          {/* 裂变入口 */}
+          <InviteSection />
 
           {/* 统计数字 */}
           <div className="mt-12 grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-6 animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
@@ -212,19 +224,25 @@ export default function HomeClient() {
               <div className="absolute left-1/2 top-12 hidden h-0.5 w-[calc(100%-6rem)] -translate-x-1/2 bg-gradient-to-r from-blue-200 via-blue-400 to-blue-200 sm:block" style={{ width: 'calc(100% - 8rem)' }} />
 
               {[
-                { step: '01', icon: '📄', title: '上传简历', desc: '支持 PDF / DOCX / TXT，或从零开始创建', color: 'from-blue-400 to-blue-500' },
-                { step: '02', icon: '🤖', title: 'AI 智能优化', desc: 'DeepSeek AI 分析简历，匹配岗位关键词，量化成果', color: 'from-indigo-400 to-indigo-500' },
-                { step: '03', icon: '📥', title: '下载使用', desc: '预览30%免费看效果，满意后一键下载完整版', color: 'from-purple-400 to-purple-500' },
+                { step: '01', icon: '📄', title: '上传简历', desc: '支持 PDF / DOCX / TXT，或从零创建新简历', tag: '免费', tagColor: 'bg-green-500' },
+                { step: '02', icon: '🤖', title: 'AI 智能优化', desc: 'DeepSeek AI 分析简历，匹配岗位关键词，量化成果', tag: '免费', tagColor: 'bg-green-500' },
+                { step: '03', icon: '📥', title: '预览 & 付费下载', desc: '30% 免费预览效果 → 满意后 ¥9.9 解锁完整 PDF', tag: '¥9.9起', tagColor: 'bg-blue-600' },
               ].map((s, i) => (
                 <div key={s.step} className="group relative flex flex-col items-center text-center">
-                  <div className={`relative z-10 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br ${s.color} text-white shadow-lg shadow-${s.color.split(' ')[1]}/30 transition-all group-hover:scale-110 group-hover:shadow-xl`}>
+                  <div className="relative z-10 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br ${s.color} text-white shadow-lg transition-all group-hover:scale-110 group-hover:shadow-xl" style={{ background: i === 2 ? 'linear-gradient(135deg, #2563eb, #7c3aed)' : 'linear-gradient(135deg, #3b82f6, #6366f1)' }}>
                     <span className="text-lg">{s.icon}</span>
                   </div>
-                  <div className="absolute -top-1 right-[calc(50%+2.5rem)] hidden text-[10px] font-bold text-blue-200 sm:block">{`0${i + 1}`}</div>
-                  <h3 className="mt-4 text-lg font-semibold text-gray-900">{s.title}</h3>
+                  <span className={`mt-3 inline-block rounded-full ${s.tagColor} px-2.5 py-0.5 text-[10px] font-semibold text-white`}>{s.tag}</span>
+                  <h3 className="mt-2 text-lg font-semibold text-gray-900">{s.title}</h3>
                   <p className="mt-1 text-sm text-gray-500 max-w-xs">{s.desc}</p>
                 </div>
               ))}
+            </div>
+
+            <div className="mt-10 text-center">
+              <Link href="/upload" className="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-8 py-4 text-base font-semibold text-white shadow-lg transition-all hover:bg-blue-700 hover:shadow-xl">
+                🚀 免费开始 — 先看效果再付款
+              </Link>
             </div>
           </div>
         </div>
@@ -269,7 +287,7 @@ export default function HomeClient() {
               {[
                 { key: 'single', name: '单次优化', price: '¥9.9', oldPrice: '¥29', desc: '适合已有简历，只需一次优化', features: ['AI 智能优化措辞', 'ATS 关键词匹配', '成果量化重写', '30% 预览免费看', 'TXT / PDF 导出'], popular: false },
                 { key: 'pack5', name: '5 次套餐', price: '¥29.9', oldPrice: '¥99', desc: '多轮优化 + 多个岗位定制', features: ['含 5 次优化额度', '每次可定制不同岗位', '优先处理队列', '30% 预览免费看', '多版本对比保留'], popular: false },
-                { key: 'unlimited', name: '月度无限', price: '¥49.9', oldPrice: '¥199', desc: '一个月不限次数，换工作必备', features: ['30 天无限次优化', '所有岗位方向覆盖', '专属优先通道', '多版本管理', '求职信生成'], popular: true },
+                { key: 'unlimited', name: '月度无限', price: '¥39.9', oldPrice: '¥199', desc: '一个月不限次数，换工作必备', features: ['30 天无限次优化', '所有岗位方向覆盖', '专属优先通道', '多版本管理', '求职信生成'], popular: true },
               ].map((tier, i) => (
                 <div
                   key={tier.key}
