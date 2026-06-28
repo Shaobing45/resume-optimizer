@@ -5,6 +5,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import InviteSection from './InviteSection';
 import Hero3D from './Hero3D';
+import TiltCard from './TiltCard';
+import TypewriterText from './TypewriterText';
 import { motion } from 'framer-motion';
 
 const QR_MAP: Record<string, { src: string; price: string; label: string }> = {
@@ -137,9 +139,7 @@ export default function HomeClient() {
             在 <span className="text-blue-600 relative">3 分钟<span className="absolute -bottom-1 left-0 h-1 w-full rounded-full bg-gradient-to-r from-blue-400 to-purple-400" /></span> 脱胎换骨
           </h1>
           <p className="mx-auto mt-4 max-w-2xl text-center text-base sm:text-lg text-gray-500 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-            AI 智能分析岗位描述 + 简历关键词优化 + ATS 格式适配
-            <br className="hidden sm:block" />
-            已帮助 <span className="font-semibold text-blue-600">10,000+</span> 人拿到面试机会
+            <TypewriterText text="AI 智能分析岗位描述 → 简历关键词优化 → ATS 格式适配" />
           </p>
 
           {/* CTA */}
@@ -262,7 +262,7 @@ export default function HomeClient() {
 
             <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
               {FEATURES.map((f, i) => (
-                <div
+                <TiltCard
                   key={f.title}
                   className="group rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-100 transition-all hover:shadow-lg hover:-translate-y-1 hover:ring-blue-200"
                   style={{ opacity: visibleSections.features ? 1 : 0, transform: visibleSections.features ? 'translateY(0)' : 'translateY(20px)', transition: `all 0.5s ease ${i * 0.15}s` }}
@@ -272,7 +272,7 @@ export default function HomeClient() {
                   </div>
                   <h3 className="mt-4 font-semibold text-gray-900">{f.title}</h3>
                   <p className="mt-1 text-sm text-gray-500 leading-relaxed">{f.desc}</p>
-                </div>
+                </TiltCard>
               ))}
             </div>
           </div>
