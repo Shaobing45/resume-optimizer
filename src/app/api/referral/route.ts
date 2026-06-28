@@ -1,13 +1,13 @@
 import { NextRequest } from 'next/server';
-import { getResume, createShareToken, claimFreeOptimization, createResume } from '@/lib/db';
+import { createShareToken, claimFreeOptimization, createResume } from '@/lib/db';
 import type { ApiResponse } from '@/types';
 
 // 生成分享链接
 export async function POST(request: NextRequest) {
   try {
-    const { resumeId } = await request.json();
-    const record = resumeId ? getResume(resumeId) : null;
-    if (!record) return Response.json({ success: false, error: '无效ID' } satisfies ApiResponse, { status: 400 });
+    const body = await request.json().catch(() => ({}));
+    const resumeId = body?.resumeId || 'homepage-invite';
+
     const token = createShareToken(resumeId);
     return Response.json({ success: true, data: { token, url: `https://www.jianxiaoyou.xyz/free?ref=${token}` } } satisfies ApiResponse);
   } catch {
