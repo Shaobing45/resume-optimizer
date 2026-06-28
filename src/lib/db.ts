@@ -5,14 +5,14 @@ import { v4 as uuidv4 } from 'uuid';
 import { kv } from '@vercel/kv';
 import type { ResumeRecord, OptimizeStatus, KeywordMatch } from '@/types';
 
-// Vercel 鐢?/tmp锛屾湰鍦扮敤 data/
+// Vercel 用 /tmp，本地用 data/
 const DB_DIR = process.env.VERCEL ? '/tmp/data' : path.join(process.cwd(), 'data');
 const DB_PATH = path.join(DB_DIR, 'resumes.db');
 
-// 妫€娴?KV 鏄惁鍙敤
+// 检测 KV 是否可用
 const useKV = !!(process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN);
 
-let db: Database.Database;
+let db: Database.Database | null = null;
 
 function initDb(): Database.Database {
   if (!fs.existsSync(DB_DIR)) fs.mkdirSync(DB_DIR, { recursive: true });
@@ -30,7 +30,7 @@ function initDb(): Database.Database {
     );
     CREATE TABLE IF NOT EXISTS feedback (
       id INTEGER PRIMARY KEY AUTOINCREMENT, resume_id TEXT NOT NULL,
-      name TEXT NOT NULL DEFAULT '鍖垮悕鐢ㄦ埛', rating INTEGER NOT NULL DEFAULT 5,
+      name TEXT NOT NULL DEFAULT '匿名用户', rating INTEGER NOT NULL DEFAULT 5,
       content TEXT NOT NULL, approved INTEGER NOT NULL DEFAULT 0,
       created_at TEXT NOT NULL DEFAULT (datetime('now'))
     );
@@ -57,8 +57,11 @@ function initDb(): Database.Database {
   `);
   return database;
 }
-db = initDb();
-function getDb(): Database.Database { return db; }
+
+function getDb(): Database.Database {
+  if (!db) db = initDb();
+  return db;
+}
 
 // ====== Resume ======
 
@@ -93,7 +96,7 @@ export function getKeywordMatch(record: ResumeRecord): KeywordMatch | undefined 
   try { return JSON.parse(record.keyword_match); } catch { return undefined; }
 }
 
-// ====== Users (SQLite + KV 鍙屽啓) ======
+// ====== Users (SQLite + KV 双写) ======
 
 export interface User { id:string; email:string; password_hash:string; name:string; created_at:string; }
 export interface Session { token:string; user_id:string; created_at:string; }
@@ -102,24 +105,24 @@ export function createUser(email: string, passwordHash: string, name: string): U
   const id = uuidv4();
   const normalizedEmail = email.toLowerCase().trim();
   const user: User = { id, email: normalizedEmail, password_hash: passwordHash, name: name.slice(0,50), created_at: new Date().toISOString().replace('T',' ').slice(0,19) };
-  // SQLite锛堜富璇伙級
+  // SQLite（主读）
   getDb().prepare('INSERT INTO users(id,email,password_hash,name) VALUES(?,?,?,?)')
     .run(user.id, user.email, user.password_hash, user.name);
-  // KV锛堟寔涔呭悗澶囷級
+  // KV（持久后备）
   if (useKV) { kv.set(`user:${id}`, user); kv.set(`user_email:${normalizedEmail}`, id); }
   return user;
 }
 
 export function getUserByEmail(email: string): User | null {
   const normalizedEmail = email.toLowerCase().trim();
-  // 鍏堟煡 SQLite
+  // 先查 SQLite
   const sqliteUser = (getDb().prepare('SELECT * FROM users WHERE email=?').get(normalizedEmail) as User) ?? null;
   if (sqliteUser) return sqliteUser;
-  // SQLite 娌℃湁 + KV 鍙敤 鈫?寮傛鎭㈠锛堜粎鐧诲綍鏃惰Е鍙戯紝鐧诲畬灏辨湁浜嗭級
+  // SQLite 没有 + KV 可用 → 异步恢复（仅登录时触发，登完就有了）
   return null;
 }
 
-/** KV 鎭㈠鐢ㄦ埛鍒?SQLite锛堢櫥褰曟椂璋冪敤锛?*/
+/** KV 恢复用户到 SQLite（登录时调用） */
 export async function restoreUserFromKV(email: string): Promise<User | null> {
   if (!useKV) return null;
   try {
@@ -127,7 +130,7 @@ export async function restoreUserFromKV(email: string): Promise<User | null> {
     if (!id) return null;
     const user = await kv.get<User>(`user:${id}`);
     if (!user) return null;
-    // 鎭㈠鍒?SQLite
+    // 恢复到 SQLite
     getDb().prepare('INSERT OR IGNORE INTO users(id,email,password_hash,name,created_at) VALUES(?,?,?,?,?)')
       .run(user.id, user.email, user.password_hash, user.name, user.created_at);
     return user;
@@ -169,7 +172,7 @@ export function getApprovedFeedback(): Feedback[] {
   return getDb().prepare('SELECT * FROM feedback WHERE approved=1 ORDER BY created_at DESC LIMIT 10').all() as Feedback[];
 }
 
-// ====== 鎺ㄥ箍瑁傚彉 ======
+// ====== 推广裂变 ======
 export function createShareToken(resumeId: string): string {
   const token = Math.random().toString(36).slice(2, 10);
   getDb().prepare("INSERT OR IGNORE INTO referrals (share_token, referrer_resume_id) VALUES (?,?)").run(token, resumeId);
