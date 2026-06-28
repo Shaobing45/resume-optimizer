@@ -10,54 +10,47 @@ import TypewriterText from './TypewriterText';
 import { motion } from 'framer-motion';
 
 const QR_MAP: Record<string, { src: string; price: string; label: string }> = {
-  single: { src: '/qr-pay.jpg', price: '¥9.9', label: '单次优化' },
-  pack5: { src: '/qr-pay.jpg', price: '¥29.9', label: '5次套餐' },
-  unlimited: { src: '/qr-pay.jpg', price: '¥39.9', label: '月度无限' },
+  single: { src: '/qr-pay.jpg', price: '楼9.9', label: '鍗曟浼樺寲' },
+  pack5: { src: '/qr-pay.jpg', price: '楼29.9', label: '5娆″椁? },
+  unlimited: { src: '/qr-pay.jpg', price: '楼39.9', label: '鏈堝害鏃犻檺' },
 };
 
 const FEATURES = [
-  { icon: '🎯', title: 'ATS 智能匹配', desc: '自动分析岗位描述，精准匹配行业关键词' },
-  { icon: '🚀', title: '3 分钟出结果', desc: '上传简历后 AI 自动优化，无需等待' },
-  { icon: '📊', title: '30% 预览免费', desc: '先看优化效果，满意再付款' },
-  { icon: '🔒', title: '数据安全加密', desc: '简历数据加密存储，隐私无忧' },
+  { icon: '馃幆', title: 'ATS 鏅鸿兘鍖归厤', desc: '鑷姩鍒嗘瀽宀椾綅鎻忚堪锛岀簿鍑嗗尮閰嶈涓氬叧閿瘝' },
+  { icon: '馃殌', title: '3 鍒嗛挓鍑虹粨鏋?, desc: '涓婁紶绠€鍘嗗悗 AI 鑷姩浼樺寲锛屾棤闇€绛夊緟' },
+  { icon: '馃搳', title: '30% 棰勮鍏嶈垂', desc: '鍏堢湅浼樺寲鏁堟灉锛屾弧鎰忓啀浠樻' },
+  { icon: '馃敀', title: '鏁版嵁瀹夊叏鍔犲瘑', desc: '绠€鍘嗘暟鎹姞瀵嗗瓨鍌紝闅愮鏃犲咖' },
 ];
 
 const FAQS = [
-  { q: '优化后能直接投递吗？', a: '可以！优化后的简历符合 ATS 系统标准格式，HR 阅读体验大幅提升，可直接用于各大招聘平台。' },
-  { q: '支持哪些文件格式？', a: '支持 PDF、DOCX、TXT 格式上传。建议使用 PDF 以获得最佳解析效果。' },
-  { q: '优化一次需要多久？', a: 'AI 优化一般在 1-3 分钟内完成。30% 预览免费查看，满意后支付 ¥9.9 即可解锁完整版。' },
-  { q: '有售后支持吗？', a: '如果优化结果不满意，可以联系客服重新优化，直至满意为止。' },
+  { q: '浼樺寲鍚庤兘鐩存帴鎶曢€掑悧锛?, a: '鍙互锛佷紭鍖栧悗鐨勭畝鍘嗙鍚?ATS 绯荤粺鏍囧噯鏍煎紡锛孒R 闃呰浣撻獙澶у箙鎻愬崌锛屽彲鐩存帴鐢ㄤ簬鍚勫ぇ鎷涜仒骞冲彴銆? },
+  { q: '鏀寔鍝簺鏂囦欢鏍煎紡锛?, a: '鏀寔 PDF銆丏OCX銆乀XT 鏍煎紡涓婁紶銆傚缓璁娇鐢?PDF 浠ヨ幏寰楁渶浣宠В鏋愭晥鏋溿€? },
+  { q: '浼樺寲涓€娆￠渶瑕佸涔咃紵', a: 'AI 浼樺寲涓€鑸湪 1-3 鍒嗛挓鍐呭畬鎴愩€?0% 棰勮鍏嶈垂鏌ョ湅锛屾弧鎰忓悗鏀粯 楼9.9 鍗冲彲瑙ｉ攣瀹屾暣鐗堛€? },
+  { q: '鏈夊敭鍚庢敮鎸佸悧锛?, a: '濡傛灉浼樺寲缁撴灉涓嶆弧鎰忥紝鍙互鑱旂郴瀹㈡湇閲嶆柊浼樺寲锛岀洿鑷虫弧鎰忎负姝€? },
 ];
 
-const DEMO_BEFORE = `王磊
+const DEMO_BEFORE = `鐜嬬
 ---
-电话：139-1234-5678 | 邮箱：wanglei@email.com
+鐢佃瘽锛?39-1234-5678 | 閭锛歸anglei@email.com
 
-工作经历：
-在某某科技有限公司担任后端开发
-参与公司核心项目的研发和维护
-协助团队完成项目上线
+宸ヤ綔缁忓巻锛?鍦ㄦ煇鏌愮鎶€鏈夐檺鍏徃鎷呬换鍚庣寮€鍙?鍙備笌鍏徃鏍稿績椤圭洰鐨勭爺鍙戝拰缁存姢
+鍗忓姪鍥㈤槦瀹屾垚椤圭洰涓婄嚎
 
-教育背景：
-某985大学 计算机科学与技术 本科
+鏁欒偛鑳屾櫙锛?鏌?85澶у 璁＄畻鏈虹瀛︿笌鎶€鏈?鏈
 
-技能：
-Java、MySQL、Spring Boot`;
+鎶€鑳斤細
+Java銆丮ySQL銆丼pring Boot`;
 
-const DEMO_AFTER = `王磊
+const DEMO_AFTER = `鐜嬬
 ---
-电话：139-1234-5678 | 邮箱：wanglei@email.com | 3年后端开发经验
+鐢佃瘽锛?39-1234-5678 | 閭锛歸anglei@email.com | 3骞村悗绔紑鍙戠粡楠?
+宸ヤ綔缁忓巻锛?涓诲鍏徃鏍稿績涓氬姟绯荤粺鐨勬灦鏋勫崌绾э紝鏃ュ潎澶勭悊璇锋眰閲忔彁鍗囪嚦 50 涓?閲嶆瀯璁㈠崟妯″潡锛岀郴缁熷搷搴旀椂闂翠粠 2.3s 闄嶈嚦 0.4s锛岄檷浣?82%
+鎵撻€犺嚜鍔ㄥ寲鍗曞厓娴嬭瘯浣撶郴锛屼唬鐮佽鐩栫巼浠?15% 鎻愬崌鑷?85%锛岀嚎涓?Bug 鍑忓皯 60%
 
-工作经历：
-主导公司核心业务系统的架构升级，日均处理请求量提升至 50 万
-重构订单模块，系统响应时间从 2.3s 降至 0.4s，降低 82%
-打造自动化单元测试体系，代码覆盖率从 15% 提升至 85%，线上 Bug 减少 60%
+鏁欒偛鑳屾櫙锛?鏌?85澶у 璁＄畻鏈虹瀛︿笌鎶€鏈?鏈
 
-教育背景：
-某985大学 计算机科学与技术 本科
-
-技能：
-Java · Spring Boot · MySQL · Redis · Docker · Git`;
+鎶€鑳斤細
+Java 路 Spring Boot 路 MySQL 路 Redis 路 Docker 路 Git`;
 
 export default function HomeClient() {
   const [selectedTier, setSelectedTier] = useState<string | null>(null);
@@ -74,7 +67,7 @@ export default function HomeClient() {
     pricingRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
-  // 滚动入场动画控制
+  // 婊氬姩鍏ュ満鍔ㄧ敾鎺у埗
   const [visibleSections, setVisibleSections] = useState<Record<string, boolean>>({});
   const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
@@ -103,43 +96,42 @@ export default function HomeClient() {
 
   return (
     <div className="overflow-x-hidden">
-      {/* ==================== 顶部导航 ==================== */}
+      {/* ==================== 椤堕儴瀵艰埅 ==================== */}
       <nav className="flex items-center justify-between border-b border-gray-100 bg-white/80 backdrop-blur-sm px-4 sm:px-6 lg:px-8 py-3">
-        <Link href="/" className="text-lg font-bold gradient-text">简小优</Link>
+        <Link href="/" className="text-lg font-bold gradient-text">绠€灏忎紭</Link>
         <div className="flex items-center gap-3">
-          <Link href="/login" className="text-sm font-medium text-gray-600 hover:text-gray-900">登录</Link>
-          <Link href="/register" className="rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">注册</Link>
+          <Link href="/login" className="text-sm font-medium text-gray-600 hover:text-gray-900">鐧诲綍</Link>
+          <Link href="/register" className="rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">娉ㄥ唽</Link>
         </div>
       </nav>
       {/* ==================== HERO ==================== */}
       <section className="relative overflow-hidden bg-gradient-to-br from-blue-50 via-white to-indigo-50 min-h-[80vh] flex items-center">
-        {/* 3D 背景 */}
+        {/* 3D 鑳屾櫙 */}
         <Hero3D />
 
-        {/* 装饰浮动元素 */}
+        {/* 瑁呴グ娴姩鍏冪礌 */}
         <div className="absolute left-[10%] top-[15%] h-32 w-32 rounded-full bg-blue-300/20 blur-2xl animate-float" style={{ animationDelay: '0s', zIndex: 1 }} />
         <div className="absolute right-[15%] top-[40%] h-48 w-48 rounded-full bg-indigo-300/15 blur-3xl animate-float" style={{ animationDelay: '1.5s', zIndex: 1 }} />
         <div className="absolute left-[20%] bottom-[20%] h-24 w-24 rounded-full bg-purple-300/15 blur-2xl animate-float" style={{ animationDelay: '3s', zIndex: 1 }} />
 
         <div className="relative mx-auto max-w-6xl px-4 py-16 sm:py-20 lg:py-28" style={{ zIndex: 2 }}>
-          {/* 徽章 — 带闪烁 */}
+          {/* 寰界珷 鈥?甯﹂棯鐑?*/}
           <div className="mb-6 flex justify-center">
             <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-100 px-4 py-1.5 text-xs font-medium text-blue-700 animate-fade-in-down">
               <span className="relative flex h-2 w-2"><span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-blue-400 opacity-75" /><span className="relative inline-flex h-2 w-2 rounded-full bg-blue-500" /></span>
-              10,000+ 用户信赖
+              10,000+ 鐢ㄦ埛淇¤禆
             </span>
           </div>
 
-          {/* 主标题 — 渐变 */}
+          {/* 涓绘爣棰?鈥?娓愬彉 */}
           <h1 className="mx-auto max-w-4xl text-center text-3xl font-extrabold leading-tight tracking-tight text-gray-900 sm:text-4xl lg:text-5xl animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
             <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
-              让你的简历
-            </span>
+              璁╀綘鐨勭畝鍘?            </span>
             <br />
-            在 <span className="text-blue-600 relative">3 分钟<span className="absolute -bottom-1 left-0 h-1 w-full rounded-full bg-gradient-to-r from-blue-400 to-purple-400" /></span> 脱胎换骨
+            鍦?<span className="text-blue-600 relative">3 鍒嗛挓<span className="absolute -bottom-1 left-0 h-1 w-full rounded-full bg-gradient-to-r from-blue-400 to-purple-400" /></span> 鑴辫儙鎹㈤
           </h1>
           <p className="mx-auto mt-4 max-w-2xl text-center text-base sm:text-lg text-gray-500 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-            <TypewriterText text="AI 智能分析岗位描述 → 简历关键词优化 → ATS 格式适配" />
+            <TypewriterText text="AI 鏅鸿兘鍒嗘瀽宀椾綅鎻忚堪 鈫?绠€鍘嗗叧閿瘝浼樺寲 鈫?ATS 鏍煎紡閫傞厤" />
           </p>
 
           {/* CTA */}
@@ -148,21 +140,20 @@ export default function HomeClient() {
               href="/upload"
               className="group inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-xl bg-blue-600 px-8 py-4 text-base font-semibold text-white shadow-lg shadow-blue-200/50 transition-all hover:bg-blue-700 hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0"
             >
-              开始优化简历
-              <svg className="h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
+              寮€濮嬩紭鍖栫畝鍘?              <svg className="h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
             </Link>
           </div>
 
-          {/* 裂变入口 */}
+          {/* 瑁傚彉鍏ュ彛 */}
           <InviteSection />
 
-          {/* 统计数字 */}
+          {/* 缁熻鏁板瓧 */}
           <div className="mt-12 grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-6 animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
             {[
-              { num: '10,000+', label: '服务用户' },
-              { num: '98%', label: '满意率' },
-              { num: '3 分钟', label: '平均出稿' },
-              { num: '500+', label: '合作企业' },
+              { num: '10,000+', label: '鏈嶅姟鐢ㄦ埛' },
+              { num: '98%', label: '婊℃剰鐜? },
+              { num: '3 鍒嗛挓', label: '骞冲潎鍑虹' },
+              { num: '500+', label: '鍚堜綔浼佷笟' },
             ].map((stat) => (
               <div key={stat.label} className="rounded-2xl bg-white/60 p-4 text-center backdrop-blur-sm transition-all hover:bg-white/90 hover:shadow-md card-hover">
                 <p className="text-2xl font-bold gradient-text sm:text-3xl">{stat.num}</p>
@@ -173,42 +164,40 @@ export default function HomeClient() {
         </div>
       </section>
 
-      {/* ==================== 实时简历示例 ==================== */}
+      {/* ==================== 瀹炴椂绠€鍘嗙ず渚?==================== */}
       <section className="bg-white py-16 sm:py-20 border-b border-gray-100">
         <div className="mx-auto max-w-5xl px-4" ref={setRef('demo')}>
           <div className={`transition-all duration-700 ${visibleSections.demo ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-            <h2 className="text-center text-2xl font-bold text-gray-900 sm:text-3xl">看看 AI 改得怎么样</h2>
-            <p className="mt-2 text-center text-sm text-gray-500 sm:text-base">点击按钮对比优化前后的差异</p>
+            <h2 className="text-center text-2xl font-bold text-gray-900 sm:text-3xl">鐪嬬湅 AI 鏀瑰緱鎬庝箞鏍?/h2>
+            <p className="mt-2 text-center text-sm text-gray-500 sm:text-base">鐐瑰嚮鎸夐挳瀵规瘮浼樺寲鍓嶅悗鐨勫樊寮?/p>
 
             <div className="mt-8 rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden">
-              {/* 切换栏 */}
+              {/* 鍒囨崲鏍?*/}
               <div className="flex border-b border-gray-100">
                 <button
                   onClick={() => setShowDemo(false)}
                   className={`flex-1 px-4 py-3 text-sm font-medium transition-all ${!showDemo ? 'bg-blue-50 text-blue-700 border-b-2 border-blue-500' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'}`}
                 >
-                  📄 优化前
-                </button>
+                  馃搫 浼樺寲鍓?                </button>
                 <button
                   onClick={() => setShowDemo(true)}
                   className={`flex-1 px-4 py-3 text-sm font-medium transition-all ${showDemo ? 'bg-green-50 text-green-700 border-b-2 border-green-500' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'}`}
                 >
-                  ✨ 优化后
-                </button>
+                  鉁?浼樺寲鍚?                </button>
               </div>
-              {/* 内容 */}
+              {/* 鍐呭 */}
               <div className="p-4 sm:p-6 lg:p-8">
                 <pre className={`whitespace-pre-wrap font-sans text-sm leading-relaxed transition-all duration-500 ${showDemo ? 'text-green-900' : 'text-gray-600'}`}>
                   {showDemo ? DEMO_AFTER : DEMO_BEFORE}
                 </pre>
               </div>
-              {/* 对比标注 */}
+              {/* 瀵规瘮鏍囨敞 */}
               {showDemo && (
                 <div className="bg-green-50 border-t border-green-100 px-4 sm:px-6 py-3 animate-fade-in-up">
                   <div className="flex flex-wrap gap-2 text-xs text-green-700">
-                    <span className="inline-flex items-center gap-1">✅ 量化成果（日活50万、响应降60%）</span>
-                    <span className="inline-flex items-center gap-1">✅ 动词驱动（主导、重构、打造）</span>
-                    <span className="inline-flex items-center gap-1">✅ 删掉废话（去掉"负责/参与/协助"）</span>
+                    <span className="inline-flex items-center gap-1">鉁?閲忓寲鎴愭灉锛堟棩娲?0涓囥€佸搷搴旈檷60%锛?/span>
+                    <span className="inline-flex items-center gap-1">鉁?鍔ㄨ瘝椹卞姩锛堜富瀵笺€侀噸鏋勩€佹墦閫狅級</span>
+                    <span className="inline-flex items-center gap-1">鉁?鍒犳帀搴熻瘽锛堝幓鎺?璐熻矗/鍙備笌/鍗忓姪"锛?/span>
                   </div>
                 </div>
               )}
@@ -217,21 +206,21 @@ export default function HomeClient() {
         </div>
       </section>
 
-      {/* ==================== 三步流程 ==================== */}
+      {/* ==================== 涓夋娴佺▼ ==================== */}
       <section className="bg-gradient-to-b from-white to-blue-50 py-16 sm:py-20">
         <div className="mx-auto max-w-5xl px-4" ref={setRef('steps')}>
           <div className={`transition-all duration-700 delay-100 ${visibleSections.steps ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-            <h2 className="text-center text-2xl font-bold text-gray-900 sm:text-3xl">三步搞定</h2>
-            <p className="mt-2 text-center text-sm text-gray-500 sm:text-base">比写简历更简单，比模板更智能</p>
+            <h2 className="text-center text-2xl font-bold text-gray-900 sm:text-3xl">涓夋鎼炲畾</h2>
+            <p className="mt-2 text-center text-sm text-gray-500 sm:text-base">姣斿啓绠€鍘嗘洿绠€鍗曪紝姣旀ā鏉挎洿鏅鸿兘</p>
 
             <div className="relative mt-10 grid gap-8 sm:grid-cols-3">
-              {/* 连接线（桌面端） */}
+              {/* 杩炴帴绾匡紙妗岄潰绔級 */}
               <div className="absolute left-1/2 top-12 hidden h-0.5 w-[calc(100%-6rem)] -translate-x-1/2 bg-gradient-to-r from-blue-200 via-blue-400 to-blue-200 sm:block" style={{ width: 'calc(100% - 8rem)' }} />
 
               {[
-                { step: '01', icon: '📄', title: '上传简历', desc: '支持 PDF / DOCX / TXT，或从零创建新简历', tag: '免费', tagColor: 'bg-green-500' },
-                { step: '02', icon: '🤖', title: 'AI 智能优化', desc: 'DeepSeek AI 分析简历，匹配岗位关键词，量化成果', tag: '免费', tagColor: 'bg-green-500' },
-                { step: '03', icon: '📥', title: '预览 & 付费下载', desc: '30% 免费预览效果 → 满意后 ¥9.9 解锁完整 PDF', tag: '¥9.9起', tagColor: 'bg-blue-600' },
+                { step: '01', icon: '馃搫', title: '涓婁紶绠€鍘?, desc: '鏀寔 PDF / DOCX / TXT锛屾垨浠庨浂鍒涘缓鏂扮畝鍘?, tag: '鍏嶈垂', tagColor: 'bg-green-500' },
+                { step: '02', icon: '馃', title: 'AI 鏅鸿兘浼樺寲', desc: 'DeepSeek AI 鍒嗘瀽绠€鍘嗭紝鍖归厤宀椾綅鍏抽敭璇嶏紝閲忓寲鎴愭灉', tag: '鍏嶈垂', tagColor: 'bg-green-500' },
+                { step: '03', icon: '馃摜', title: '棰勮 & 浠樿垂涓嬭浇', desc: '30% 鍏嶈垂棰勮鏁堟灉 鈫?婊℃剰鍚?楼9.9 瑙ｉ攣瀹屾暣 PDF', tag: '楼9.9璧?, tagColor: 'bg-blue-600' },
               ].map((s, i) => (
                 <div key={s.step} className="group relative flex flex-col items-center text-center">
                   <div className="relative z-10 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br ${s.color} text-white shadow-lg transition-all group-hover:scale-110 group-hover:shadow-xl" style={{ background: i === 2 ? 'linear-gradient(135deg, #2563eb, #7c3aed)' : 'linear-gradient(135deg, #3b82f6, #6366f1)' }}>
@@ -246,19 +235,18 @@ export default function HomeClient() {
 
             <div className="mt-10 text-center">
               <Link href="/upload" className="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-8 py-4 text-base font-semibold text-white shadow-lg transition-all hover:bg-blue-700 hover:shadow-xl">
-                🚀 免费开始 — 先看效果再付款
-              </Link>
+                馃殌 鍏嶈垂寮€濮?鈥?鍏堢湅鏁堟灉鍐嶄粯娆?              </Link>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ==================== 核心功能 ==================== */}
+      {/* ==================== 鏍稿績鍔熻兘 ==================== */}
       <section className="bg-white py-16 sm:py-20">
         <div className="mx-auto max-w-5xl px-4" ref={setRef('features')}>
           <div className={`transition-all duration-700 delay-100 ${visibleSections.features ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-            <h2 className="text-center text-2xl font-bold text-gray-900 sm:text-3xl">为什么选简小优？</h2>
-            <p className="mt-2 text-center text-sm text-gray-500 sm:text-base">四大核心优势，让简历脱颖而出</p>
+            <h2 className="text-center text-2xl font-bold text-gray-900 sm:text-3xl">涓轰粈涔堥€夌畝灏忎紭锛?/h2>
+            <p className="mt-2 text-center text-sm text-gray-500 sm:text-base">鍥涘ぇ鏍稿績浼樺娍锛岃绠€鍘嗚劚棰栬€屽嚭</p>
 
             <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
               {FEATURES.map((f, i) => (
@@ -279,20 +267,20 @@ export default function HomeClient() {
         </div>
       </section>
 
-      {/* ==================== 定价 ==================== */}
+      {/* ==================== 瀹氫环 ==================== */}
       <section id="pricing" ref={pricingRef} className="bg-gradient-to-b from-white to-blue-50 py-16 sm:py-20">
         <div className="mx-auto max-w-5xl px-4" ref={setRef('pricing')}>
           <div className={`transition-all duration-700 ${visibleSections.pricing ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-            <h2 className="text-center text-2xl font-bold text-gray-900 sm:text-3xl">选择套餐</h2>
+            <h2 className="text-center text-2xl font-bold text-gray-900 sm:text-3xl">閫夋嫨濂楅</h2>
             <p className="mt-2 text-center text-sm text-gray-500 sm:text-base">
-              先看效果再付款，不满意可重新优化
+              鍏堢湅鏁堟灉鍐嶄粯娆撅紝涓嶆弧鎰忓彲閲嶆柊浼樺寲
             </p>
 
             <div className="mt-8 grid gap-4 sm:grid-cols-3">
               {[
-                { key: 'single', name: '单次优化', price: '¥9.9', oldPrice: '¥29', desc: '适合已有简历，只需一次优化', features: ['AI 智能优化措辞', 'ATS 关键词匹配', '成果量化重写', '30% 预览免费看', 'TXT / PDF 导出'], popular: false },
-                { key: 'pack5', name: '5 次套餐', price: '¥29.9', oldPrice: '¥99', desc: '多轮优化 + 多个岗位定制', features: ['含 5 次优化额度', '每次可定制不同岗位', '优先处理队列', '30% 预览免费看', '多版本对比保留'], popular: false },
-                { key: 'unlimited', name: '月度无限', price: '¥39.9', oldPrice: '¥199', desc: '一个月不限次数，换工作必备', features: ['30 天无限次优化', '所有岗位方向覆盖', '专属优先通道', '多版本管理', '求职信生成'], popular: true },
+                { key: 'single', name: '鍗曟浼樺寲', price: '楼9.9', oldPrice: '楼29', desc: '閫傚悎宸叉湁绠€鍘嗭紝鍙渶涓€娆′紭鍖?, features: ['AI 鏅鸿兘浼樺寲鎺緸', 'ATS 鍏抽敭璇嶅尮閰?, '鎴愭灉閲忓寲閲嶅啓', '30% 棰勮鍏嶈垂鐪?, 'TXT / PDF 瀵煎嚭'], popular: false },
+                { key: 'pack5', name: '5 娆″椁?, price: '楼29.9', oldPrice: '楼99', desc: '澶氳疆浼樺寲 + 澶氫釜宀椾綅瀹氬埗', features: ['鍚?5 娆′紭鍖栭搴?, '姣忔鍙畾鍒朵笉鍚屽矖浣?, '浼樺厛澶勭悊闃熷垪', '30% 棰勮鍏嶈垂鐪?, '澶氱増鏈姣斾繚鐣?], popular: false },
+                { key: 'unlimited', name: '鏈堝害鏃犻檺', price: '楼39.9', oldPrice: '楼199', desc: '涓€涓湀涓嶉檺娆℃暟锛屾崲宸ヤ綔蹇呭', features: ['30 澶╂棤闄愭浼樺寲', '鎵€鏈夊矖浣嶆柟鍚戣鐩?, '涓撳睘浼樺厛閫氶亾', '澶氱増鏈鐞?, '姹傝亴淇＄敓鎴?], popular: true },
               ].map((tier, i) => (
                 <div
                   key={tier.key}
@@ -305,7 +293,7 @@ export default function HomeClient() {
                 >
                   {tier.popular && (
                     <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-1 text-xs font-semibold text-white shadow-lg">
-                      最受欢迎 🏆
+                      鏈€鍙楁杩?馃弳
                     </span>
                   )}
                   <h3 className="text-lg font-semibold text-gray-900">{tier.name}</h3>
@@ -330,32 +318,31 @@ export default function HomeClient() {
                         : 'border-2 border-blue-200 bg-white text-blue-600 hover:bg-blue-50 hover:border-blue-400'
                     } ${selectedTier === tier.key ? 'ring-2 ring-blue-500 ring-offset-2' : ''}`}
                   >
-                    {selectedTier === tier.key ? '已选择 ✓' : '选择此套餐'}
+                    {selectedTier === tier.key ? '宸查€夋嫨 鉁? : '閫夋嫨姝ゅ椁?}
                   </button>
                 </div>
               ))}
             </div>
 
-            {/* 收款码 */}
+            {/* 鏀舵鐮?*/}
             {qr && (
               <div className="mt-8 rounded-2xl border-2 border-blue-200 bg-gradient-to-b from-blue-50 to-white p-4 shadow-xl sm:p-6 lg:p-8 animate-scale-in">
                 <div className="grid gap-6 md:grid-cols-2">
                   <div className="flex flex-col items-center justify-center">
                     <div className="overflow-hidden rounded-2xl border-2 border-gray-200 bg-white p-2 shadow-md sm:p-3 transition-transform hover:scale-[1.02]">
-                      <Image src={qr.src} alt={`微信收款码 ${qr.price}`} width={240} height={240} className="h-auto w-48 sm:w-56" priority />
+                      <Image src={qr.src} alt={`寰俊鏀舵鐮?${qr.price}`} width={240} height={240} className="h-auto w-48 sm:w-56" priority />
                     </div>
-                    <p className="mt-3 text-sm font-semibold text-gray-700">{qr.label} · {qr.price}</p>
+                    <p className="mt-3 text-sm font-semibold text-gray-700">{qr.label} 路 {qr.price}</p>
                   </div>
                   <div className="flex flex-col justify-center space-y-3 text-sm">
-                    <h4 className="text-base font-bold text-gray-900">📱 微信扫码支付</h4>
+                    <h4 className="text-base font-bold text-gray-900">馃摫 寰俊鎵爜鏀粯</h4>
                     <div className="space-y-2 text-gray-600">
-                      <p>① 截图或长按识别二维码 → 支付 <b>{qr.price}</b></p>
-                      <p>② 付款备注填写简历 ID</p>
-                      <p>③ 管理员确认后自动解锁</p>
+                      <p>鈶?鎴浘鎴栭暱鎸夎瘑鍒簩缁寸爜 鈫?鏀粯 <b>{qr.price}</b></p>
+                      <p>鈶?浠樻澶囨敞濉啓绠€鍘?ID</p>
+                      <p>鈶?绠＄悊鍛樼‘璁ゅ悗鑷姩瑙ｉ攣</p>
                     </div>
                     <Link href={`/upload?tier=${selectedTier}`} className="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-md transition-all hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0">
-                      📤 上传简历，开始优化
-                    </Link>
+                      馃摛 涓婁紶绠€鍘嗭紝寮€濮嬩紭鍖?                    </Link>
                   </div>
                 </div>
               </div>
@@ -364,19 +351,19 @@ export default function HomeClient() {
         </div>
       </section>
 
-      {/* ==================== 信任标识 ==================== */}
+      {/* ==================== 淇′换鏍囪瘑 ==================== */}
       <section className="bg-white py-16 sm:py-20">
         <div className="mx-auto max-w-5xl px-4" ref={setRef('trust')}>
           <div className={`transition-all duration-700 delay-100 ${visibleSections.trust ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-            <h2 className="text-center text-2xl font-bold text-gray-900 sm:text-3xl">为什么值得信赖</h2>
-            <p className="mt-2 text-center text-sm text-gray-500 sm:text-base">真实数据，无需编造</p>
+            <h2 className="text-center text-2xl font-bold text-gray-900 sm:text-3xl">涓轰粈涔堝€煎緱淇¤禆</h2>
+            <p className="mt-2 text-center text-sm text-gray-500 sm:text-base">鐪熷疄鏁版嵁锛屾棤闇€缂栭€?/p>
 
-            {/* 数字墙 */}
+            {/* 鏁板瓧澧?*/}
             <div className="mt-10 grid grid-cols-3 gap-4 sm:gap-8">
               {[
-                { num: '10,000+', label: '简历已优化' },
-                { num: '98%', label: '用户满意度' },
-                { num: '3 min', label: '平均出稿速度' },
+                { num: '10,000+', label: '绠€鍘嗗凡浼樺寲' },
+                { num: '98%', label: '鐢ㄦ埛婊℃剰搴? },
+                { num: '3 min', label: '骞冲潎鍑虹閫熷害' },
               ].map((s, i) => (
                 <div key={s.label} className="text-center group" style={{ animationDelay: `${i * 0.15}s` }}>
                   <p className="text-3xl sm:text-4xl font-extrabold gradient-text">{s.num}</p>
@@ -385,16 +372,16 @@ export default function HomeClient() {
               ))}
             </div>
 
-            {/* Logo 墙 */}
+            {/* Logo 澧?*/}
             <div className="mt-12 rounded-2xl border border-gray-100 bg-gray-50 p-6 sm:p-8">
-              <p className="text-center text-xs font-medium text-gray-400 mb-6">技术驱动 &amp; 平台支持</p>
+              <p className="text-center text-xs font-medium text-gray-400 mb-6">鎶€鏈┍鍔?&amp; 骞冲彴鏀寔</p>
               <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-10 opacity-60 grayscale transition-all hover:grayscale-0 hover:opacity-100">
                 <div className="flex items-center gap-2 font-semibold text-gray-700 text-sm sm:text-base">
                   <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-green-100 text-green-700 text-xs font-bold">DS</span>
                   DeepSeek AI
                 </div>
                 <div className="flex items-center gap-2 font-semibold text-gray-700 text-sm sm:text-base">
-                  <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-black text-white text-xs font-bold">▲</span>
+                  <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-black text-white text-xs font-bold">鈻?/span>
                   Vercel
                 </div>
                 <div className="flex items-center gap-2 font-semibold text-gray-700 text-sm sm:text-base">
@@ -402,22 +389,22 @@ export default function HomeClient() {
                   TypeScript
                 </div>
                 <div className="flex items-center gap-2 font-semibold text-gray-700 text-sm sm:text-base">
-                  <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-orange-100 text-orange-700 text-xs font-bold">▲</span>
+                  <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-orange-100 text-orange-700 text-xs font-bold">鈻?/span>
                   Next.js
                 </div>
                 <div className="flex items-center gap-2 font-semibold text-gray-700 text-sm sm:text-base">
-                  <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 text-blue-600 text-xs font-bold">🔒</span>
-                  数据加密
+                  <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 text-blue-600 text-xs font-bold">馃敀</span>
+                  鏁版嵁鍔犲瘑
                 </div>
               </div>
             </div>
 
-            {/* 承诺 */}
+            {/* 鎵胯 */}
             <div className="mt-6 grid gap-3 sm:grid-cols-3">
               {[
-                { icon: '🔄', text: '不满意可重新优化' },
-                { icon: '🔒', text: '数据 24h 自动删除' },
-                { icon: '🆓', text: '30% 预览免费看' },
+                { icon: '馃攧', text: '涓嶆弧鎰忓彲閲嶆柊浼樺寲' },
+                { icon: '馃敀', text: '鏁版嵁 24h 鑷姩鍒犻櫎' },
+                { icon: '馃啌', text: '30% 棰勮鍏嶈垂鐪? },
               ].map((p) => (
                 <div key={p.text} className="flex items-center gap-3 rounded-xl border border-gray-100 bg-gray-50 px-4 py-3">
                   <span className="text-xl">{p.icon}</span>
@@ -429,12 +416,12 @@ export default function HomeClient() {
         </div>
       </section>
 
-      {/* ==================== 真实用户评价 ==================== */}
+      {/* ==================== 鐪熷疄鐢ㄦ埛璇勪环 ==================== */}
       {feedback.length > 0 && (
         <section className="bg-gray-50 py-16 sm:py-20">
           <div className="mx-auto max-w-5xl px-4">
-            <h2 className="text-center text-2xl font-bold text-gray-900 sm:text-3xl">用户真实评价</h2>
-            <p className="mt-2 text-center text-sm text-gray-500 sm:text-base">来自真实用户的反馈</p>
+            <h2 className="text-center text-2xl font-bold text-gray-900 sm:text-3xl">鐢ㄦ埛鐪熷疄璇勪环</h2>
+            <p className="mt-2 text-center text-sm text-gray-500 sm:text-base">鏉ヨ嚜鐪熷疄鐢ㄦ埛鐨勫弽棣?/p>
             <div className="mt-8 grid gap-4 sm:grid-cols-3">
               {feedback.slice(0, 3).map((f, i) => (
                 <div key={i} className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-gray-100 transition-all hover:shadow-md">
@@ -456,7 +443,7 @@ export default function HomeClient() {
       <section className="bg-gray-50 py-16 sm:py-20">
         <div className="mx-auto max-w-3xl px-4" ref={setRef('faq')}>
           <div className={`transition-all duration-700 delay-100 ${visibleSections.faq ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-            <h2 className="text-center text-2xl font-bold text-gray-900 sm:text-3xl">常见问题</h2>
+            <h2 className="text-center text-2xl font-bold text-gray-900 sm:text-3xl">甯歌闂</h2>
             <div className="mt-8 space-y-3">
               {FAQS.map((faq) => (
                 <details key={faq.q} className="group rounded-xl border border-gray-200 bg-white transition-all hover:border-gray-300 [&[open]]:border-blue-200 [&[open]]:shadow-md">
@@ -474,28 +461,27 @@ export default function HomeClient() {
         </div>
       </section>
 
-      {/* ==================== 底部 CTA ==================== */}
+      {/* ==================== 搴曢儴 CTA ==================== */}
       <section className="relative overflow-hidden bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 py-16">
         <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent" />
         <div className="absolute -left-20 -top-20 h-40 w-40 rounded-full bg-white/5 blur-3xl" />
         <div className="absolute -right-20 -bottom-20 h-40 w-40 rounded-full bg-white/5 blur-3xl" />
         <div className="mx-auto max-w-3xl px-4 text-center relative">
-          <h2 className="text-2xl font-bold text-white sm:text-3xl">准备好让简历脱颖而出了吗？</h2>
-          <p className="mt-3 text-sm text-blue-100 sm:text-base">¥9.9 起，3 分钟出稿，不满意可重来</p>
+          <h2 className="text-2xl font-bold text-white sm:text-3xl">鍑嗗濂借绠€鍘嗚劚棰栬€屽嚭浜嗗悧锛?/h2>
+          <p className="mt-3 text-sm text-blue-100 sm:text-base">楼9.9 璧凤紝3 鍒嗛挓鍑虹锛屼笉婊℃剰鍙噸鏉?/p>
           <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
             <Link href="/upload" className="group inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-xl bg-white px-8 py-4 text-sm font-bold text-blue-700 shadow-lg transition-all hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0">
-              立即开始
-              <svg className="h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
+              绔嬪嵆寮€濮?              <svg className="h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
             </Link>
           </div>
         </div>
       </section>
 
-      {/* 页脚 */}
+      {/* 椤佃剼 */}
       <footer className="bg-gray-900 py-8 text-center text-xs text-gray-500">
-        <p className="text-sm font-semibold text-gray-400">简小优 · AI 简历优化</p>
-        <p className="mt-2">© {new Date().getFullYear()} · 所有简历数据加密存储，隐私安全保护</p>
-        <p className="mt-1">¥9.9 起 · 不满意可重新优化</p>
+        <p className="text-sm font-semibold text-gray-400">绠€灏忎紭 路 AI 绠€鍘嗕紭鍖?/p>
+        <p className="mt-2">漏 {new Date().getFullYear()} 路 鎵€鏈夌畝鍘嗘暟鎹姞瀵嗗瓨鍌紝闅愮瀹夊叏淇濇姢</p>
+        <p className="mt-1">楼9.9 璧?路 涓嶆弧鎰忓彲閲嶆柊浼樺寲</p>
       </footer>
     </div>
   );
