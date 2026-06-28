@@ -52,8 +52,8 @@ function Particles() {
 
 export default function Hero3D() {
   return (
-    <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 0 }}>
-      <Canvas camera={{ position: [0, 0, 5], fov: 45 }} dpr={[1, 2]}>
+    <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 0, width: '100%', height: '100%', minHeight: '60vh' }}>
+      <Canvas camera={{ position: [0, 0, 5], fov: 45 }} dpr={[1, 2]} style={{ width: '100%', height: '100%', minHeight: '60vh' }}>
         <ambientLight intensity={0.8} />
         <directionalLight position={[5, 5, 5]} intensity={0.5} />
         <directionalLight position={[-5, -5, -5]} intensity={0.3} color="#6366f1" />
