@@ -6,15 +6,16 @@ import { useParams, useSearchParams } from 'next/navigation';
 import ResumeCompare from '@/components/ResumeCompare';
 import AtsScoreBadge from '@/components/AtsScoreBadge';
 import FeedbackForm from '@/components/FeedbackForm';
+import ShareFree from '@/components/ShareFree';
 import LoadingSpinner from '@/components/LoadingSpinner';
-import { downloadResumeAsPdf } from '@/lib/pdf';
+import { downloadResumeAsPdf, downloadResumeAsDoc } from '@/lib/pdf';
 import { notifyBrowser } from '@/lib/notify';
 import type { ApiResponse, OptimizeResponse } from '@/types';
 
 const QR_MAP: Record<string, { src: string; price: string }> = {
   single: { src: '/qr-pay.jpg', price: '¥9.9' },
-  pack5: { src: '/qr-pay-5.jpg', price: '¥29.9' },
-  unlimited: { src: '/qr-pay-month.jpg', price: '¥49.9' },
+  pack5: { src: '/qr-pay.jpg', price: '¥29.9' },
+  unlimited: { src: '/qr-pay.jpg', price: '¥39.9' },
 };
 
 export default function ResultPage() {
@@ -26,7 +27,9 @@ export default function ResultPage() {
   const [error, setError] = useState('');
   const [data, setData] = useState<OptimizeResponse | null>(null);
   const [checkingPayment, setCheckingPayment] = useState(false);
+  const [confirmError, setConfirmError] = useState('');
   const [pdfLoading, setPdfLoading] = useState(false);
+  const [docLoading, setDocLoading] = useState(false);
   const prevStatusRef = useRef<string | undefined>(undefined);
   const notifiedRef = useRef(false);
 
@@ -74,7 +77,7 @@ export default function ResultPage() {
           }
         } catch { /* ignore */ }
       }, 5000);
-      const timeout = setTimeout(() => clearInterval(timer), 120000);
+      const timeout = setTimeout(() => clearInterval(timer), 1800000); // 30分钟超时
       return () => { clearInterval(timer); clearTimeout(timeout); };
     }
   }, [data?.status, id]);
@@ -111,11 +114,25 @@ export default function ResultPage() {
 
   const checkPayment = useCallback(async () => {
     setCheckingPayment(true);
+    setConfirmError('');
     try {
-      const res = await fetch(`/api/result?id=${id}`);
+      const res = await fetch('/api/self-confirm', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id }),
+      });
       const json: ApiResponse<OptimizeResponse> = await res.json();
-      if (json.success && json.data) setData(json.data);
-    } catch { /* ignore */ } finally {
+      if (json.success) {
+        // 重新加载结果
+        const resultRes = await fetch(`/api/result?id=${id}`);
+        const resultJson: ApiResponse<OptimizeResponse> = await resultRes.json();
+        if (resultJson.success && resultJson.data) setData(resultJson.data);
+      } else {
+        setConfirmError(json.error || '确认失败，请稍后重试');
+      }
+    } catch {
+      setConfirmError('网络错误，请重试');
+    } finally {
       setCheckingPayment(false);
     }
   }, [id]);
@@ -157,15 +174,41 @@ export default function ResultPage() {
           </h2>
           <p className="mt-2 text-sm text-amber-600">
             {isExpired
-              ? '支付超时（超过2小时），请重新上传简历获取新订单'
+              ? '支付超时，请重新上传简历获取新订单'
               : '简历优化过程中出现错误，请重试'}
           </p>
-          <a
-            href="/upload"
-            className="mt-6 inline-flex items-center gap-2 rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-md hover:bg-blue-700"
-          >
-            📤 重新开始
-          </a>
+          <div className="mt-4 flex flex-col sm:flex-row items-center justify-center gap-3">
+            {isExpired && (
+              <button
+                onClick={async () => {
+                  try {
+                    const res = await fetch('/api/self-confirm', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ id }),
+                    });
+                    const json = await res.json();
+                    if (json.success) {
+                      window.location.reload();
+                    } else {
+                      alert('如果已付款请联系客服手动处理');
+                    }
+                  } catch {
+                    alert('操作失败');
+                  }
+                }}
+                className="inline-flex items-center gap-2 rounded-xl bg-green-600 px-6 py-3 text-sm font-semibold text-white shadow-md hover:bg-green-700"
+              >
+                ✅ 我已付款，立即解锁
+              </button>
+            )}
+            <a
+              href="/upload"
+              className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-md hover:bg-blue-700"
+            >
+              📤 重新开始
+            </a>
+          </div>
         </div>
       </div>
     );
@@ -201,16 +244,40 @@ export default function ResultPage() {
             📄 下载 TXT
           </button>
           <button
-            onClick={async () => { setPdfLoading(true); try { await downloadResumeAsPdf(data.optimized); } catch { /* ignore */ } finally { setPdfLoading(false); } }}
+            onClick={async () => {
+              setPdfLoading(true);
+              try {
+                const photo = localStorage.getItem('jxy-resume-photo') || undefined;
+                await downloadResumeAsPdf(data.optimized, undefined, photo);
+              } catch { /* ignore */ }
+              finally { setPdfLoading(false); }
+            }}
             disabled={pdfLoading}
             className="inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-xl bg-blue-600 px-5 sm:px-6 py-3 text-sm font-semibold text-white shadow-md hover:bg-blue-700 disabled:opacity-50"
           >
             {pdfLoading ? (<><div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />生成中…</>) : '📥 下载 PDF 简历'}
           </button>
+          <button
+            onClick={() => {
+              setDocLoading(true);
+              try {
+                const photo = localStorage.getItem('jxy-resume-photo') || undefined;
+                downloadResumeAsDoc(data.optimized, undefined, photo);
+              } catch { /* ignore */ }
+              finally { setDocLoading(false); }
+            }}
+            disabled={docLoading}
+            className="inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-xl border border-gray-300 bg-white px-5 sm:px-6 py-3 text-sm font-semibold text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+          >
+            {docLoading ? '生成中…' : '📝 下载 Word 文档'}
+          </button>
         </div>
 
         {/* 评价反馈 */}
         <FeedbackForm resumeId={id} />
+
+        {/* 分享免费体验 */}
+        <ShareFree resumeId={id} />
       </div>
     );
   }
@@ -258,10 +325,13 @@ export default function ResultPage() {
             <p>3️⃣ 完成支付后系统自动检测，无需手动刷新</p>
           </div>
           <div className="mt-4 sm:mt-6 flex flex-col items-center gap-2 sm:gap-3">
+            {confirmError && (
+              <p className="text-xs text-red-500 bg-red-50 rounded-lg px-3 py-1.5 w-full text-center">{confirmError}</p>
+            )}
             <button onClick={checkPayment} disabled={checkingPayment} className="inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-xl bg-green-600 px-6 sm:px-8 py-3 sm:py-3.5 text-sm sm:text-base font-semibold text-white shadow-md transition-all hover:bg-green-700 disabled:opacity-50">
-              {checkingPayment ? (<><div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />检查中…</>) : '✅ 已完成支付，查看完整内容'}
+              {checkingPayment ? (<><div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />确认中…</>) : '✅ 已完成支付，查看完整内容'}
             </button>
-            <p className="text-[10px] sm:text-xs text-gray-400 text-center">管理员确认收款后自动解锁，也可点击上方按钮手动检测</p>
+            <p className="text-[10px] sm:text-xs text-gray-400 text-center">支付后点击按钮即可自动解锁，无需等待管理员确认</p>
           </div>
         </div>
       </div>
