@@ -143,7 +143,7 @@ export default function HomeClient() {
             </span>{' '}<span className="text-white drop-shadow-[0_0_20px_rgba(99,102,241,0.5)]">脱胎换骨</span>
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-center text-lg sm:text-xl text-gray-300 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-            <TypewriterText text="DeepSeek AI 驱动 · 岗位智能匹配 · 一键导出PDF" />
+            <TypewriterText text="AI 智能匹配 · 一键导出PDF" />
           </p>
 
           {/* CTA — 发光按钮 */}
@@ -174,7 +174,6 @@ export default function HomeClient() {
               { num: '10,000+', label: '服务用户' },
               { num: '98%', label: '满意率' },
               { num: '3 分钟', label: '平均出稿' },
-              { num: '500+', label: '合作企业' },
             ].map((stat) => (
               <div key={stat.label} className="rounded-2xl bg-white/60 p-4 text-center backdrop-blur-sm transition-all hover:bg-white/90 hover:shadow-md card-hover">
                 <p className="text-2xl font-bold gradient-text sm:text-3xl">{stat.num}</p>
@@ -242,7 +241,7 @@ export default function HomeClient() {
 
               {[
                 { step: '01', icon: '📄', title: '上传简历', desc: '支持 PDF / DOCX / TXT，或从零创建新简历', tag: '免费', tagColor: 'bg-green-500' },
-                { step: '02', icon: '🤖', title: 'AI 智能优化', desc: 'DeepSeek AI 分析简历，匹配岗位关键词，量化成果', tag: '免费', tagColor: 'bg-green-500' },
+                { step: '02', icon: '🤖', title: 'AI 智能优化', desc: 'AI 分析简历，匹配岗位关键词，量化成果', tag: '免费', tagColor: 'bg-green-500' },
                 { step: '03', icon: '📥', title: '预览 & 付费下载', desc: '30% 免费预览效果 → 满意后 ¥9.9 解锁完整 PDF', tag: '¥9.9起', tagColor: 'bg-blue-600' },
               ].map((s, i) => (
                 <div key={s.step} className="group relative flex flex-col items-center text-center">
@@ -401,10 +400,6 @@ export default function HomeClient() {
             <div className="mt-12 rounded-2xl border border-gray-100 bg-gray-50 p-6 sm:p-8">
               <p className="text-center text-xs font-medium text-gray-400 mb-6">技术驱动 &amp; 平台支持</p>
               <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-10 opacity-60 grayscale transition-all hover:grayscale-0 hover:opacity-100">
-                <div className="flex items-center gap-2 font-semibold text-gray-700 text-sm sm:text-base">
-                  <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-green-100 text-green-700 text-xs font-bold">DS</span>
-                  DeepSeek AI
-                </div>
                 <div className="flex items-center gap-2 font-semibold text-gray-700 text-sm sm:text-base">
                   <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-black text-white text-xs font-bold">▲</span>
                   Vercel
